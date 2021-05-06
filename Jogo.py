@@ -7,8 +7,10 @@ screen = pygame.display.set_mode((1000, 625), 0, 32)
 pygame.display.set_caption('WEIGHTLIFTER - Jogos Digitais')
 clock = pygame.time.Clock()
 
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 #---------[IMAGENS]---------#
-background_image_filename = 'background.jpg'
+background_image_filename = 'prop/background.jpg'
 title_image_filename = 'title.svg'
 volume_image_filename = 'volume.svg'
 mutado_image_filename = 'mute.svg'
@@ -40,7 +42,43 @@ def texto(texto, fonte, cor, surface, x, y):
     surface.blit(texto, texto_posi)
 #-------------------------#
 
+#----------[CLASSES]------#
+class Ponteiro(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((10,50))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.speedx = 0
+        self.rect.x = 125
+        self.rect.y = 400
+        self.speedx = 4
+    
+    def update(self):
+        self.rect.x += self.speedx
+        if self.rect.x > 915:
+            self.speedx = -1
+        if self.rect.x < 125:
+            self.speedx = 1
 
+class Acerto(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((100,50))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.rect.x = 475
+        self.rect.y = 400
+#-------------------------#
+
+#--------[OBJETOS]--------#
+barra = pygame.Rect(125, 400, 800, 50)
+pont = Ponteiro()
+acer = Acerto()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(acer)
+all_sprites.add(pont)
+#-------------------------#
 click = False
 
 
@@ -119,10 +157,10 @@ def mute(status):
 def jogo():
     running = True
     while running:
+        all_sprites.update()
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-
-        texto('Jogo', fonte, (255, 255, 255), screen, 20, 20)
+        pygame.draw.rect(screen, (169, 169, 169), barra)
         
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -132,6 +170,7 @@ def jogo():
                 if event.key == K_ESCAPE:
                     running = False
 
+        all_sprites.draw(screen)
         pygame.display.update()
         clock.tick(60)
 
