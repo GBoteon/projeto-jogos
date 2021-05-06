@@ -123,6 +123,7 @@ def jogo():
         screen.blit(background, (0, 0))
 
         texto('Jogo', fonte, (255, 255, 255), screen, 20, 20)
+        
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
