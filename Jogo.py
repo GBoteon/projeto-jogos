@@ -110,7 +110,9 @@ all_sprites.add(pont)
 click = False
 
 
+
 def gui():
+    #--------GAME LOOP-------#
     while True:
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
