@@ -112,7 +112,6 @@ click = False
 
 def gui():
     while True:
-
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         screen.blit(title, (-470, 105))
@@ -183,6 +182,7 @@ def mute(status):
 
 
 def jogo():
+    # game loop
     running = True
     while running:
         global comprimento
