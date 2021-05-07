@@ -9,6 +9,10 @@ clock = pygame.time.Clock()
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+engordou = False
+emagreceu = False
+comprimento = 100
+velocidade = 10
 #---------[IMAGENS]---------#
 background_image_filename = 'prop/background.jpg'
 title_image_filename = 'title.svg'
@@ -52,23 +56,47 @@ class Ponteiro(pygame.sprite.Sprite):
         self.speedx = 0
         self.rect.x = 125
         self.rect.y = 400
-        self.speedx = 4
+        self.speedx = velocidade
     
     def update(self):
         self.rect.x += self.speedx
         if self.rect.x > 915:
-            self.speedx = -1
+            self.speedx = velocidade*-1
         if self.rect.x < 125:
-            self.speedx = 1
+            self.speedx = velocidade
+        
+    def treinar(self):
+        global velocidade
+        velocidade += 2
 
 class Acerto(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((100,50))
+        self.image = pygame.Surface((comprimento,50))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.x = 475
         self.rect.y = 400
+
+    def emagrece(self):
+        global comprimento
+        if comprimento <= 300:
+            self.rect.x -= 5
+            comprimento += 10
+            self.image = pygame.Surface((comprimento,50))
+            self.image.fill(GREEN)
+        else:
+            print("limite")
+            
+    def engorda(self):
+        global comprimento
+        if comprimento >= 50: 
+            self.rect.x += 5
+            comprimento -= 10
+            self.image = pygame.Surface((comprimento,50))
+            self.image.fill(GREEN)
+        else:
+            print("limite")
 #-------------------------#
 
 #--------[OBJETOS]--------#
@@ -157,18 +185,48 @@ def mute(status):
 def jogo():
     running = True
     while running:
+        global comprimento
         all_sprites.update()
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
         pygame.draw.rect(screen, (169, 169, 169), barra)
+        b_emagrece = pygame.Rect(10, 100, 170, 50)
+        b_engordar = pygame.Rect(10, 10, 170, 50)
+        b_treinar = pygame.Rect(300, 10, 170, 50)
+        if b_engordar.collidepoint((mouse_x, mouse_y)):
+            if click:
+                acer.engorda()
+        if b_emagrece.collidepoint((mouse_x, mouse_y)):
+            if click:
+                acer.emagrece()
+        if b_treinar.collidepoint((mouse_x, mouse_y)):
+            if click:
+                pont.treinar()
+        pygame.draw.rect(screen, (0, 0, 0), b_treinar, border_radius=15)
+        texto('Treinar', fonte, (255, 255, 255), screen, 325, 25)
+        pygame.draw.rect(screen, (0, 0, 0), b_emagrece, border_radius=15)
+        texto('Comida boa', fonte, (255, 255, 255), screen, 25, 125)
+        pygame.draw.rect(screen, (0, 0, 0), b_engordar, border_radius=15)
+        texto('Comida engorda', fonte, (255, 255, 255), screen, 25, 25)
         
+        engordou = False
+        click = False
         for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    running = False
+                    pygame.quit()
+                    sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
 
         all_sprites.draw(screen)
         pygame.display.update()
