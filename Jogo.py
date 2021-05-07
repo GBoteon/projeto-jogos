@@ -322,15 +322,14 @@ menina4P1 = Menina4P1(340, 40)
 jogo_sprites = pygame.sprite.Group()
 jogo_sprites.add(acer)
 jogo_sprites.add(pont)
-jogo_sprites.add(player)
+jogo_sprites.add(player3)
 barra_display = pygame.Rect(125, 400, 800, 50)
 pont_display = Ponteiro()
 acer_display = Acerto()
 como_jogar_sprites = pygame.sprite.Group()
 como_jogar_sprites.add(player3)
-como_jogar_sprites.add(menina2P3)
-como_jogar_sprites.add(menina3P3)
-como_jogar_sprites.add(menina4P3)
+como_jogar_sprites.add(acer_display)
+como_jogar_sprites.add(pont_display)
 #-------------------------#
 click = False
 
