@@ -15,11 +15,13 @@ comprimento = 100
 velocidade = 10
 #---------[IMAGENS]---------#
 background_image_filename = 'background.jpg'
+background_image_filename2 = 'background2.png'
 title_image_filename = 'title.svg'
 volume_image_filename = 'volume.svg'
 mutado_image_filename = 'mute.svg'
 
 background = pygame.image.load(background_image_filename).convert()
+background2 = pygame.image.load(background_image_filename2).convert()
 title = pygame.image.load(title_image_filename).convert_alpha()
 volume = pygame.image.load(volume_image_filename).convert_alpha()
 mutado = pygame.image.load(mutado_image_filename).convert_alpha()
@@ -48,14 +50,14 @@ def texto(texto, fonte, cor, surface, x, y):
 
 #----------[CLASSES]------#
 class Ponteiro(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, pos_x, pos_y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((10,50))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.speedx = 0
-        self.rect.x = 125
-        self.rect.y = 400
+        self.rect.x = pos_x
+        self.rect.y = pos_y
         self.speedx = velocidade
     
     def update(self):
@@ -70,13 +72,13 @@ class Ponteiro(pygame.sprite.Sprite):
         velocidade += 2
 
 class Acerto(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, pos_x, pos_y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((comprimento,50))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.x = 475
-        self.rect.y = 400
+        self.rect.x = pos_x
+        self.rect.y = pos_y
 
     def emagrece(self):
         global comprimento
@@ -303,34 +305,6 @@ class Menina4P3(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 #-------------------------#
 
-#--------[OBJETOS]--------#
-barra = pygame.Rect(125, 400, 800, 50)
-pont = Ponteiro()
-acer = Acerto()
-player3 = PlayerP3(40, 40)
-player2 = PlayerP2(40, 40)
-player1 = PlayerP1(40, 40)
-menina2P3 = Menina2P3(140, 40)
-menina2P2 = Menina2P2(140, 40)
-menina2P1 = Menina2P1(140, 40)
-menina3P3 = Menina3P3(240, 40)
-menina3P2 = Menina3P2(240, 40)
-menina3P1 = Menina3P1(240, 40)
-menina4P3 = Menina4P3(340, 40)
-menina4P2 = Menina4P2(340, 40)
-menina4P1 = Menina4P1(340, 40)
-jogo_sprites = pygame.sprite.Group()
-jogo_sprites.add(acer)
-jogo_sprites.add(pont)
-jogo_sprites.add(player3)
-barra_display = pygame.Rect(125, 400, 800, 50)
-pont_display = Ponteiro()
-acer_display = Acerto()
-como_jogar_sprites = pygame.sprite.Group()
-como_jogar_sprites.add(player3)
-como_jogar_sprites.add(acer_display)
-como_jogar_sprites.add(pont_display)
-#-------------------------#
 click = False
 
 
@@ -408,6 +382,14 @@ def mute(status):
 
 
 def jogo():
+    barra = pygame.Rect(125, 400, 800, 50)
+    acer = Acerto(125, 400)
+    pont = Ponteiro(475, 400)
+    player1 = PlayerP1(40, 40)
+    jogo_sprites = pygame.sprite.Group()
+    jogo_sprites.add(acer)
+    jogo_sprites.add(pont)
+    jogo_sprites.add(player1)
     # game loop
     running = True
     while running:
@@ -444,10 +426,6 @@ def jogo():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
@@ -459,11 +437,19 @@ def jogo():
 
 
 def como_jogar():
+    barra_display = pygame.Rect(125, 550, 800, 50)
+    player_display = PlayerP3(50, 30)
+    pont_display = Ponteiro(125, 550)
+    acer_display = Acerto(475, 550)
+    como_jogar_sprites = pygame.sprite.Group()
+    como_jogar_sprites.add(player_display)
+    como_jogar_sprites.add(acer_display)
+    como_jogar_sprites.add(pont_display)
     running = True
     while running:
         screen.fill((0, 0, 0))
-        screen.blit(background, (0, 0))
-        pygame.draw.rect(screen, (169, 169, 169), barra)
+        screen.blit(background2, (0, 0))
+        pygame.draw.rect(screen, (169, 169, 169), barra_display)
         texto('Como Jogar', fonte, (255, 255, 255), screen, 20, 20)
         for event in pygame.event.get():
             if event.type == QUIT:
