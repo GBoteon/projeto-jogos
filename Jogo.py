@@ -44,6 +44,7 @@ som_on = True
 
 #---------[TEXTO]---------#
 fonte = pygame.font.SysFont(None, 30)
+dindin = pygame.font.SysFont(None, 60)
 
 
 def texto(texto, fonte, cor, surface, x, y):
@@ -410,7 +411,7 @@ class Peso3(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_01/M01_0001.png'),
                         pygame.image.load('personagens/menina_01/M01_0002.png'),
@@ -500,8 +501,19 @@ class Player(pygame.sprite.Sprite):
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+        if peso == 1:
+            self.peso = Peso1((pos_x + 159), (pos_y + 174))
+
+        if peso == 2:
+            self.peso = Peso2((pos_x + 159), (pos_y + 174))
+
+        if peso == 3:
+            self.peso = Peso3((pos_x + 159), (pos_y + 174))
+
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
+        self.current_money = 1000
+        self.salary = 100
         self.current_hunger = 150
         self.maximum_hunger = 200
         self.hunger_bar_lenght = 200
@@ -521,6 +533,10 @@ class Player(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+    def basic_money(self):
+        self.current_money += self.salary
+        texto("$ " + str(self.current_money), dindin,(6, 152, 0), screen, 770, 120)
+
     def get_train(self, amount):
         if self.current_hunger > 0:
             self.current_hunger -= amount
@@ -534,7 +550,7 @@ class Player(pygame.sprite.Sprite):
             self.current_hunger = self.maximum_hunger
 
     def basic_hunger(self):
-        pygame.draw.rect(screen, (236, 124, 48), (770, 80, self.current_hunger, 25))
+        pygame.draw.rect(screen, (236, 124, 48), (770, 80, self.current_hunger/self.hunger_ratio, 25))
         pygame.draw.rect(screen, (255, 255, 255), (770, 80, self.hunger_bar_lenght, 25), 4)
         screen.blit(hunger, (750, 65))
 
@@ -551,12 +567,12 @@ class Player(pygame.sprite.Sprite):
             self.current_energy = self.maximum_energy
 
     def basic_energy(self):
-        pygame.draw.rect(screen, (255, 255, 0), (770, 20, self.current_energy, 25))
+        pygame.draw.rect(screen, (255, 255, 0), (770, 20, self.current_energy/self.energy_ratio, 25))
         pygame.draw.rect(screen, (255, 255, 255), (770, 20, self.energy_bar_lenght, 25), 4)
         screen.blit(energy, (750, 10))
 
 class Menina2(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_02/M02_0001.png'),
                         pygame.image.load('personagens/menina_02/M02_0002.png'),
@@ -646,6 +662,15 @@ class Menina2(pygame.sprite.Sprite):
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+        if peso == 1:
+            self.peso = Peso1((pos_x + 159), (pos_y + 174))
+
+        if peso == 2:
+            self.peso = Peso2((pos_x + 159), (pos_y + 174))
+
+        if peso == 3:
+            self.peso = Peso3((pos_x + 159), (pos_y + 174))
+
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
 
@@ -657,7 +682,7 @@ class Menina2(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 
 class Menina3(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_03/M03_0001.png'),
                         pygame.image.load('personagens/menina_03/M03_0002.png'),
@@ -747,6 +772,15 @@ class Menina3(pygame.sprite.Sprite):
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+        if peso == 1:
+            self.peso = Peso1((pos_x + 159), (pos_y + 174))
+
+        if peso == 2:
+            self.peso = Peso2((pos_x + 159), (pos_y + 174))
+
+        if peso == 3:
+            self.peso = Peso3((pos_x + 159), (pos_y + 174))
+
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
 
@@ -758,7 +792,7 @@ class Menina3(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 
 class Menina4(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_04/M04_0001.png'),
                         pygame.image.load('personagens/menina_04/M04_0002.png'),
@@ -848,6 +882,15 @@ class Menina4(pygame.sprite.Sprite):
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+        if peso == 1:
+            self.peso = Peso1((pos_x + 159), (pos_y + 174))
+
+        if peso == 2:
+            self.peso = Peso2((pos_x + 159), (pos_y + 174))
+
+        if peso == 3:
+            self.peso = Peso3((pos_x + 159), (pos_y + 174))
+
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
 
@@ -936,16 +979,17 @@ def mute(status):
 
 
 def jogo():
+    peso = 3
     barra = pygame.Rect(125, 400, 800, 50)
+    #fundo = pygame.Rect(0, 0, )
     acer = Acerto(475, 400)
     pont = Ponteiro(125, 400)
-    player1 = Player(40, 40)
-    peso1 = Peso1(199, 214)
+    player1 = Player(40, 40, peso)
     jogo_sprites = pygame.sprite.Group()
     jogo_sprites.add(acer)
     jogo_sprites.add(pont)
     jogo_sprites.add(player1)
-    jogo_sprites.add(peso1)
+    jogo_sprites.add(player1.peso)
     # game loop
     running = True
     while running:
