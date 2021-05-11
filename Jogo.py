@@ -6,17 +6,25 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 625), 0, 32)
 pygame.display.set_caption('WEIGHTLIFTER - Jogos Digitais')
 clock = pygame.time.Clock()
-
+#---------[CORES]---------#
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+GRAY = (162, 162, 162)
+BLACK = (0, 0, 0)
+#------------------------#
+
+#-----[VARIÁVEIS GLOBAIS]-----#
 engordou = False
 emagreceu = False
 comprimento = 100
 velocidade = 10
 dia = 0
+#-----------------------------#
+
 #---------[IMAGENS]---------#
 background_image_filename = 'background.jpg'
 background_image_filename2 = 'background2.png'
+idle_image_filename = 'personagens/idle.png'
 title_image_filename = 'title.svg'
 volume_image_filename = 'volume.svg'
 mutado_image_filename = 'mute.svg'
@@ -25,11 +33,14 @@ energy_image_filename = 'icones/forca.png'
 
 background = pygame.image.load(background_image_filename).convert()
 background2 = pygame.image.load(background_image_filename2).convert()
+idle = pygame.image.load(idle_image_filename).convert_alpha()
 title = pygame.image.load(title_image_filename).convert_alpha()
 volume = pygame.image.load(volume_image_filename).convert_alpha()
 mutado = pygame.image.load(mutado_image_filename).convert_alpha()
-hunger = pygame.transform.scale(pygame.image.load(hunger_image_filename), (50, 50)).convert_alpha()
-energy = pygame.transform.scale(pygame.image.load(energy_image_filename), (50, 50)).convert_alpha()
+hunger = pygame.transform.scale(pygame.image.load(
+    hunger_image_filename), (50, 50)).convert_alpha()
+energy = pygame.transform.scale(pygame.image.load(
+    energy_image_filename), (50, 50)).convert_alpha()
 
 volume_alpha = 500
 mutado_alpha = 0
@@ -55,32 +66,35 @@ def texto(texto, fonte, cor, surface, x, y):
 #-------------------------#
 
 #----------[CLASSES]------#
+
+
 class Ponteiro(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((10,50))
+        self.image = pygame.Surface((10, 50))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.speedx = 0
         self.rect.x = pos_x
         self.rect.y = pos_y
         self.speedx = velocidade
-    
+
     def update(self):
         self.rect.x += self.speedx
-        if self.rect.x > 915:
+        if self.rect.x > 605:
             self.speedx = velocidade*-1
-        if self.rect.x < 125:
+        if self.rect.x < 26:
             self.speedx = velocidade
-        
+
     def treinar(self):
         global velocidade
         velocidade += 2
 
+
 class Acerto(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((comprimento,50))
+        self.image = pygame.Surface((comprimento, 50))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
@@ -91,20 +105,31 @@ class Acerto(pygame.sprite.Sprite):
         if comprimento <= 300:
             self.rect.x -= 5
             comprimento += 10
-            self.image = pygame.Surface((comprimento,50))
+            self.image = pygame.Surface((comprimento, 50))
             self.image.fill(GREEN)
         else:
             print("limite")
-            
+
     def engorda(self):
         global comprimento
-        if comprimento >= 50: 
+        if comprimento >= 50:
             self.rect.x += 5
             comprimento -= 10
-            self.image = pygame.Surface((comprimento,50))
+            self.image = pygame.Surface((comprimento, 50))
             self.image.fill(GREEN)
         else:
             print("limite")
+
+
+class Barra(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((600, 50))
+        self.image.fill(GRAY)
+        self.rect = self.image.get_rect()
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+
 
 # adicionar 159 no x & 174 #
 class Peso1(pygame.sprite.Sprite):
@@ -208,6 +233,7 @@ class Peso1(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+
 class Peso2(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -308,6 +334,7 @@ class Peso2(pygame.sprite.Sprite):
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
+
 
 class Peso3(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -410,93 +437,244 @@ class Peso3(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+
+class Idle(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = idle
+        self.rect = self.image.get_rect()
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+
+        self.current_money = 1000
+        self.salary = 100
+        self.current_hunger = 150
+        self.maximum_hunger = 200
+        self.hunger_bar_lenght = 200
+        self.hunger_ratio = self.maximum_hunger / self.hunger_bar_lenght
+        self.current_energy = 150
+        self.maximum_energy = 200
+        self.energy_bar_lenght = 200
+        self.energy_ratio = self.maximum_energy / self.energy_bar_lenght
+
+    def update(self):
+        self.basic_hunger()
+        self.basic_energy()
+
+    def basic_money(self):
+        self.current_money += self.salary
+        texto("$ " + str(self.current_money), dindin, (6, 152, 0), screen, 770, 120)
+
+    def get_train(self, amount):
+        if self.current_hunger > 0:
+            self.current_hunger -= amount
+        if self.current_hunger <= 0:
+            self.current_hunger = 0
+
+    def get_food(self, amount):
+        if self.current_hunger < self.maximum_hunger:
+            self.current_hunger += amount
+        if self.current_hunger >= self.maximum_hunger:
+            self.current_hunger = self.maximum_hunger
+
+    def basic_hunger(self):
+        pygame.draw.rect(screen, (236, 124, 48),
+                         (770, 80, self.current_hunger/self.hunger_ratio, 25))
+        pygame.draw.rect(screen, (255, 255, 255),
+                         (770, 80, self.hunger_bar_lenght, 25), 4)
+        screen.blit(hunger, (750, 65))
+
+    def get_tired(self, amount):
+        if self.current_energy > 0:
+            self.current_energy -= amount
+        if self.current_energy <= 0:
+            self.current_energy = 0
+
+    def get_rest(self, amount):
+        if self.current_energy < self.maximum_energy:
+            self.current_energy += amount
+        if self.current_energy >= self.maximum_energy:
+            self.current_energy = self.maximum_energy
+
+    def basic_energy(self):
+        pygame.draw.rect(screen, (255, 255, 0),
+                         (770, 20, self.current_energy/self.energy_ratio, 25))
+        pygame.draw.rect(screen, (255, 255, 255),
+                         (770, 20, self.energy_bar_lenght, 25), 4)
+        screen.blit(energy, (750, 10))
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_01/M01_0001.png'),
-                        pygame.image.load('personagens/menina_01/M01_0002.png'),
-                        pygame.image.load('personagens/menina_01/M01_0003.png'),
-                        pygame.image.load('personagens/menina_01/M01_0004.png'),
-                        pygame.image.load('personagens/menina_01/M01_0005.png'),
-                        pygame.image.load('personagens/menina_01/M01_0006.png'),
-                        pygame.image.load('personagens/menina_01/M01_0007.png'),
-                        pygame.image.load('personagens/menina_01/M01_0008.png'),
-                        pygame.image.load('personagens/menina_01/M01_0009.png'),
-                        pygame.image.load('personagens/menina_01/M01_0010.png'),
-                        pygame.image.load('personagens/menina_01/M01_0011.png'),
-                        pygame.image.load('personagens/menina_01/M01_0012.png'),
-                        pygame.image.load('personagens/menina_01/M01_0013.png'),
-                        pygame.image.load('personagens/menina_01/M01_0014.png'),
-                        pygame.image.load('personagens/menina_01/M01_0015.png'),
-                        pygame.image.load('personagens/menina_01/M01_0016.png'),
-                        pygame.image.load('personagens/menina_01/M01_0017.png'),
-                        pygame.image.load('personagens/menina_01/M01_0018.png'),
-                        pygame.image.load('personagens/menina_01/M01_0019.png'),
-                        pygame.image.load('personagens/menina_01/M01_0020.png'),
-                        pygame.image.load('personagens/menina_01/M01_0021.png'),
-                        pygame.image.load('personagens/menina_01/M01_0022.png'),
-                        pygame.image.load('personagens/menina_01/M01_0023.png'),
-                        pygame.image.load('personagens/menina_01/M01_0024.png'),
-                        pygame.image.load('personagens/menina_01/M01_0025.png'),
-                        pygame.image.load('personagens/menina_01/M01_0026.png'),
-                        pygame.image.load('personagens/menina_01/M01_0027.png'),
-                        pygame.image.load('personagens/menina_01/M01_0028.png'),
-                        pygame.image.load('personagens/menina_01/M01_0029.png'),
-                        pygame.image.load('personagens/menina_01/M01_0030.png'),
-                        pygame.image.load('personagens/menina_01/M01_0031.png'),
-                        pygame.image.load('personagens/menina_01/M01_0032.png'),
-                        pygame.image.load('personagens/menina_01/M01_0033.png'),
-                        pygame.image.load('personagens/menina_01/M01_0034.png'),
-                        pygame.image.load('personagens/menina_01/M01_0035.png'),
-                        pygame.image.load('personagens/menina_01/M01_0036.png'),
-                        pygame.image.load('personagens/menina_01/M01_0037.png'),
-                        pygame.image.load('personagens/menina_01/M01_0038.png'),
-                        pygame.image.load('personagens/menina_01/M01_0039.png'),
-                        pygame.image.load('personagens/menina_01/M01_0040.png'),
-                        pygame.image.load('personagens/menina_01/M01_0041.png'),
-                        pygame.image.load('personagens/menina_01/M01_0042.png'),
-                        pygame.image.load('personagens/menina_01/M01_0043.png'),
-                        pygame.image.load('personagens/menina_01/M01_0044.png'),
-                        pygame.image.load('personagens/menina_01/M01_0045.png'),
-                        pygame.image.load('personagens/menina_01/M01_0046.png'),
-                        pygame.image.load('personagens/menina_01/M01_0047.png'),
-                        pygame.image.load('personagens/menina_01/M01_0048.png'),
-                        pygame.image.load('personagens/menina_01/M01_0049.png'),
-                        pygame.image.load('personagens/menina_01/M01_0050.png'),
-                        pygame.image.load('personagens/menina_01/M01_0051.png'),
-                        pygame.image.load('personagens/menina_01/M01_0052.png'),
-                        pygame.image.load('personagens/menina_01/M01_0053.png'),
-                        pygame.image.load('personagens/menina_01/M01_0054.png'),
-                        pygame.image.load('personagens/menina_01/M01_0055.png'),
-                        pygame.image.load('personagens/menina_01/M01_0056.png'),
-                        pygame.image.load('personagens/menina_01/M01_0057.png'),
-                        pygame.image.load('personagens/menina_01/M01_0058.png'),
-                        pygame.image.load('personagens/menina_01/M01_0059.png'),
-                        pygame.image.load('personagens/menina_01/M01_0060.png'),
-                        pygame.image.load('personagens/menina_01/M01_0061.png'),
-                        pygame.image.load('personagens/menina_01/M01_0062.png'),
-                        pygame.image.load('personagens/menina_01/M01_0063.png'),
-                        pygame.image.load('personagens/menina_01/M01_0064.png'),
-                        pygame.image.load('personagens/menina_01/M01_0065.png'),
-                        pygame.image.load('personagens/menina_01/M01_0066.png'),
-                        pygame.image.load('personagens/menina_01/M01_0067.png'),
-                        pygame.image.load('personagens/menina_01/M01_0068.png'),
-                        pygame.image.load('personagens/menina_01/M01_0069.png'),
-                        pygame.image.load('personagens/menina_01/M01_0070.png'),
-                        pygame.image.load('personagens/menina_01/M01_0071.png'),
-                        pygame.image.load('personagens/menina_01/M01_0072.png'),
-                        pygame.image.load('personagens/menina_01/M01_0073.png'),
-                        pygame.image.load('personagens/menina_01/M01_0074.png'),
-                        pygame.image.load('personagens/menina_01/M01_0075.png'),
-                        pygame.image.load('personagens/menina_01/M01_0076.png'),
-                        pygame.image.load('personagens/menina_01/M01_0077.png'),
-                        pygame.image.load('personagens/menina_01/M01_0078.png'),
-                        pygame.image.load('personagens/menina_01/M01_0079.png'),
-                        pygame.image.load('personagens/menina_01/M01_0080.png'),
-                        pygame.image.load('personagens/menina_01/M01_0081.png'),
-                        pygame.image.load('personagens/menina_01/M01_0082.png'),
-                        pygame.image.load('personagens/menina_01/M01_0083.png'),
-                        pygame.image.load('personagens/menina_01/M01_0084.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0002.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0003.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0004.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0005.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0006.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0007.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0008.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0009.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0010.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0011.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0012.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0013.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0014.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0015.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0016.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0017.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0018.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0019.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0020.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0021.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0022.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0023.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0024.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0025.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0026.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0027.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0028.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0029.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0030.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0031.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0032.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0033.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0034.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0035.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0036.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0037.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0038.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0039.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0040.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0041.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0042.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0043.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0044.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0045.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0046.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0047.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0048.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0049.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0050.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0051.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0052.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0053.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0054.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0055.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0056.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0057.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0058.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0059.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0060.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0061.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0062.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0063.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0064.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0065.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0066.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0067.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0068.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0069.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0070.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0071.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0072.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0073.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0074.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0075.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0076.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0077.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0078.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0079.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0080.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0081.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0082.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0083.png'),
+                        pygame.image.load(
+                            'personagens/menina_01/M01_0084.png'),
                         pygame.image.load('personagens/menina_01/M01_0085.png')]
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
@@ -535,7 +713,8 @@ class Player(pygame.sprite.Sprite):
 
     def basic_money(self):
         self.current_money += self.salary
-        texto("$ " + str(self.current_money), dindin,(6, 152, 0), screen, 770, 120)
+        texto("$ " + str(self.current_money),
+              dindin, (6, 152, 0), screen, 770, 120)
 
     def get_train(self, amount):
         if self.current_hunger > 0:
@@ -550,8 +729,10 @@ class Player(pygame.sprite.Sprite):
             self.current_hunger = self.maximum_hunger
 
     def basic_hunger(self):
-        pygame.draw.rect(screen, (236, 124, 48), (770, 80, self.current_hunger/self.hunger_ratio, 25))
-        pygame.draw.rect(screen, (255, 255, 255), (770, 80, self.hunger_bar_lenght, 25), 4)
+        pygame.draw.rect(screen, (236, 124, 48),
+                         (770, 80, self.current_hunger/self.hunger_ratio, 25))
+        pygame.draw.rect(screen, (255, 255, 255),
+                         (770, 80, self.hunger_bar_lenght, 25), 4)
         screen.blit(hunger, (750, 65))
 
     def get_tired(self, amount):
@@ -567,97 +748,183 @@ class Player(pygame.sprite.Sprite):
             self.current_energy = self.maximum_energy
 
     def basic_energy(self):
-        pygame.draw.rect(screen, (255, 255, 0), (770, 20, self.current_energy/self.energy_ratio, 25))
-        pygame.draw.rect(screen, (255, 255, 255), (770, 20, self.energy_bar_lenght, 25), 4)
+        pygame.draw.rect(screen, (255, 255, 0),
+                         (770, 20, self.current_energy/self.energy_ratio, 25))
+        pygame.draw.rect(screen, (255, 255, 255),
+                         (770, 20, self.energy_bar_lenght, 25), 4)
         screen.blit(energy, (750, 10))
+
 
 class Menina2(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_02/M02_0001.png'),
-                        pygame.image.load('personagens/menina_02/M02_0002.png'),
-                        pygame.image.load('personagens/menina_02/M02_0003.png'),
-                        pygame.image.load('personagens/menina_02/M02_0004.png'),
-                        pygame.image.load('personagens/menina_02/M02_0005.png'),
-                        pygame.image.load('personagens/menina_02/M02_0006.png'),
-                        pygame.image.load('personagens/menina_02/M02_0007.png'),
-                        pygame.image.load('personagens/menina_02/M02_0008.png'),
-                        pygame.image.load('personagens/menina_02/M02_0009.png'),
-                        pygame.image.load('personagens/menina_02/M02_0010.png'),
-                        pygame.image.load('personagens/menina_02/M02_0011.png'),
-                        pygame.image.load('personagens/menina_02/M02_0012.png'),
-                        pygame.image.load('personagens/menina_02/M02_0013.png'),
-                        pygame.image.load('personagens/menina_02/M02_0014.png'),
-                        pygame.image.load('personagens/menina_02/M02_0015.png'),
-                        pygame.image.load('personagens/menina_02/M02_0016.png'),
-                        pygame.image.load('personagens/menina_02/M02_0017.png'),
-                        pygame.image.load('personagens/menina_02/M02_0018.png'),
-                        pygame.image.load('personagens/menina_02/M02_0019.png'),
-                        pygame.image.load('personagens/menina_02/M02_0020.png'),
-                        pygame.image.load('personagens/menina_02/M02_0021.png'),
-                        pygame.image.load('personagens/menina_02/M02_0022.png'),
-                        pygame.image.load('personagens/menina_02/M02_0023.png'),
-                        pygame.image.load('personagens/menina_02/M02_0024.png'),
-                        pygame.image.load('personagens/menina_02/M02_0025.png'),
-                        pygame.image.load('personagens/menina_02/M02_0026.png'),
-                        pygame.image.load('personagens/menina_02/M02_0027.png'),
-                        pygame.image.load('personagens/menina_02/M02_0028.png'),
-                        pygame.image.load('personagens/menina_02/M02_0029.png'),
-                        pygame.image.load('personagens/menina_02/M02_0030.png'),
-                        pygame.image.load('personagens/menina_02/M02_0031.png'),
-                        pygame.image.load('personagens/menina_02/M02_0032.png'),
-                        pygame.image.load('personagens/menina_02/M02_0033.png'),
-                        pygame.image.load('personagens/menina_02/M02_0034.png'),
-                        pygame.image.load('personagens/menina_02/M02_0035.png'),
-                        pygame.image.load('personagens/menina_02/M02_0036.png'),
-                        pygame.image.load('personagens/menina_02/M02_0037.png'),
-                        pygame.image.load('personagens/menina_02/M02_0038.png'),
-                        pygame.image.load('personagens/menina_02/M02_0039.png'),
-                        pygame.image.load('personagens/menina_02/M02_0040.png'),
-                        pygame.image.load('personagens/menina_02/M02_0041.png'),
-                        pygame.image.load('personagens/menina_02/M02_0042.png'),
-                        pygame.image.load('personagens/menina_02/M02_0043.png'),
-                        pygame.image.load('personagens/menina_02/M02_0044.png'),
-                        pygame.image.load('personagens/menina_02/M02_0045.png'),
-                        pygame.image.load('personagens/menina_02/M02_0046.png'),
-                        pygame.image.load('personagens/menina_02/M02_0047.png'),
-                        pygame.image.load('personagens/menina_02/M02_0048.png'),
-                        pygame.image.load('personagens/menina_02/M02_0049.png'),
-                        pygame.image.load('personagens/menina_02/M02_0050.png'),
-                        pygame.image.load('personagens/menina_02/M02_0051.png'),
-                        pygame.image.load('personagens/menina_02/M02_0052.png'),
-                        pygame.image.load('personagens/menina_02/M02_0053.png'),
-                        pygame.image.load('personagens/menina_02/M02_0054.png'),
-                        pygame.image.load('personagens/menina_02/M02_0055.png'),
-                        pygame.image.load('personagens/menina_02/M02_0056.png'),
-                        pygame.image.load('personagens/menina_02/M02_0057.png'),
-                        pygame.image.load('personagens/menina_02/M02_0058.png'),
-                        pygame.image.load('personagens/menina_02/M02_0059.png'),
-                        pygame.image.load('personagens/menina_02/M02_0060.png'),
-                        pygame.image.load('personagens/menina_02/M02_0061.png'),
-                        pygame.image.load('personagens/menina_02/M02_0062.png'),
-                        pygame.image.load('personagens/menina_02/M02_0063.png'),
-                        pygame.image.load('personagens/menina_02/M02_0064.png'),
-                        pygame.image.load('personagens/menina_02/M02_0065.png'),
-                        pygame.image.load('personagens/menina_02/M02_0066.png'),
-                        pygame.image.load('personagens/menina_02/M02_0067.png'),
-                        pygame.image.load('personagens/menina_02/M02_0068.png'),
-                        pygame.image.load('personagens/menina_02/M02_0069.png'),
-                        pygame.image.load('personagens/menina_02/M02_0070.png'),
-                        pygame.image.load('personagens/menina_02/M02_0071.png'),
-                        pygame.image.load('personagens/menina_02/M02_0072.png'),
-                        pygame.image.load('personagens/menina_02/M02_0073.png'),
-                        pygame.image.load('personagens/menina_02/M02_0074.png'),
-                        pygame.image.load('personagens/menina_02/M02_0075.png'),
-                        pygame.image.load('personagens/menina_02/M02_0076.png'),
-                        pygame.image.load('personagens/menina_02/M02_0077.png'),
-                        pygame.image.load('personagens/menina_02/M02_0078.png'),
-                        pygame.image.load('personagens/menina_02/M02_0079.png'),
-                        pygame.image.load('personagens/menina_02/M02_0080.png'),
-                        pygame.image.load('personagens/menina_02/M02_0081.png'),
-                        pygame.image.load('personagens/menina_02/M02_0082.png'),
-                        pygame.image.load('personagens/menina_02/M02_0083.png'),
-                        pygame.image.load('personagens/menina_02/M02_0084.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0002.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0003.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0004.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0005.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0006.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0007.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0008.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0009.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0010.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0011.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0012.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0013.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0014.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0015.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0016.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0017.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0018.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0019.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0020.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0021.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0022.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0023.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0024.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0025.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0026.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0027.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0028.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0029.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0030.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0031.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0032.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0033.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0034.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0035.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0036.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0037.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0038.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0039.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0040.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0041.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0042.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0043.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0044.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0045.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0046.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0047.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0048.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0049.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0050.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0051.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0052.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0053.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0054.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0055.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0056.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0057.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0058.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0059.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0060.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0061.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0062.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0063.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0064.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0065.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0066.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0067.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0068.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0069.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0070.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0071.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0072.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0073.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0074.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0075.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0076.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0077.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0078.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0079.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0080.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0081.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0082.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0083.png'),
+                        pygame.image.load(
+                            'personagens/menina_02/M02_0084.png'),
                         pygame.image.load('personagens/menina_02/M02_0085.png')]
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
@@ -681,93 +948,177 @@ class Menina2(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+
 class Menina3(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_03/M03_0001.png'),
-                        pygame.image.load('personagens/menina_03/M03_0002.png'),
-                        pygame.image.load('personagens/menina_03/M03_0003.png'),
-                        pygame.image.load('personagens/menina_03/M03_0004.png'),
-                        pygame.image.load('personagens/menina_03/M03_0005.png'),
-                        pygame.image.load('personagens/menina_03/M03_0006.png'),
-                        pygame.image.load('personagens/menina_03/M03_0007.png'),
-                        pygame.image.load('personagens/menina_03/M03_0008.png'),
-                        pygame.image.load('personagens/menina_03/M03_0009.png'),
-                        pygame.image.load('personagens/menina_03/M03_0010.png'),
-                        pygame.image.load('personagens/menina_03/M03_0011.png'),
-                        pygame.image.load('personagens/menina_03/M03_0012.png'),
-                        pygame.image.load('personagens/menina_03/M03_0013.png'),
-                        pygame.image.load('personagens/menina_03/M03_0014.png'),
-                        pygame.image.load('personagens/menina_03/M03_0015.png'),
-                        pygame.image.load('personagens/menina_03/M03_0016.png'),
-                        pygame.image.load('personagens/menina_03/M03_0017.png'),
-                        pygame.image.load('personagens/menina_03/M03_0018.png'),
-                        pygame.image.load('personagens/menina_03/M03_0019.png'),
-                        pygame.image.load('personagens/menina_03/M03_0020.png'),
-                        pygame.image.load('personagens/menina_03/M03_0021.png'),
-                        pygame.image.load('personagens/menina_03/M03_0022.png'),
-                        pygame.image.load('personagens/menina_03/M03_0023.png'),
-                        pygame.image.load('personagens/menina_03/M03_0024.png'),
-                        pygame.image.load('personagens/menina_03/M03_0025.png'),
-                        pygame.image.load('personagens/menina_03/M03_0026.png'),
-                        pygame.image.load('personagens/menina_03/M03_0027.png'),
-                        pygame.image.load('personagens/menina_03/M03_0028.png'),
-                        pygame.image.load('personagens/menina_03/M03_0029.png'),
-                        pygame.image.load('personagens/menina_03/M03_0030.png'),
-                        pygame.image.load('personagens/menina_03/M03_0031.png'),
-                        pygame.image.load('personagens/menina_03/M03_0032.png'),
-                        pygame.image.load('personagens/menina_03/M03_0033.png'),
-                        pygame.image.load('personagens/menina_03/M03_0034.png'),
-                        pygame.image.load('personagens/menina_03/M03_0035.png'),
-                        pygame.image.load('personagens/menina_03/M03_0036.png'),
-                        pygame.image.load('personagens/menina_03/M03_0037.png'),
-                        pygame.image.load('personagens/menina_03/M03_0038.png'),
-                        pygame.image.load('personagens/menina_03/M03_0039.png'),
-                        pygame.image.load('personagens/menina_03/M03_0040.png'),
-                        pygame.image.load('personagens/menina_03/M03_0041.png'),
-                        pygame.image.load('personagens/menina_03/M03_0042.png'),
-                        pygame.image.load('personagens/menina_03/M03_0043.png'),
-                        pygame.image.load('personagens/menina_03/M03_0044.png'),
-                        pygame.image.load('personagens/menina_03/M03_0045.png'),
-                        pygame.image.load('personagens/menina_03/M03_0046.png'),
-                        pygame.image.load('personagens/menina_03/M03_0047.png'),
-                        pygame.image.load('personagens/menina_03/M03_0048.png'),
-                        pygame.image.load('personagens/menina_03/M03_0049.png'),
-                        pygame.image.load('personagens/menina_03/M03_0050.png'),
-                        pygame.image.load('personagens/menina_03/M03_0051.png'),
-                        pygame.image.load('personagens/menina_03/M03_0052.png'),
-                        pygame.image.load('personagens/menina_03/M03_0053.png'),
-                        pygame.image.load('personagens/menina_03/M03_0054.png'),
-                        pygame.image.load('personagens/menina_03/M03_0055.png'),
-                        pygame.image.load('personagens/menina_03/M03_0056.png'),
-                        pygame.image.load('personagens/menina_03/M03_0057.png'),
-                        pygame.image.load('personagens/menina_03/M03_0058.png'),
-                        pygame.image.load('personagens/menina_03/M03_0059.png'),
-                        pygame.image.load('personagens/menina_03/M03_0060.png'),
-                        pygame.image.load('personagens/menina_03/M03_0061.png'),
-                        pygame.image.load('personagens/menina_03/M03_0062.png'),
-                        pygame.image.load('personagens/menina_03/M03_0063.png'),
-                        pygame.image.load('personagens/menina_03/M03_0064.png'),
-                        pygame.image.load('personagens/menina_03/M03_0065.png'),
-                        pygame.image.load('personagens/menina_03/M03_0066.png'),
-                        pygame.image.load('personagens/menina_03/M03_0067.png'),
-                        pygame.image.load('personagens/menina_03/M03_0068.png'),
-                        pygame.image.load('personagens/menina_03/M03_0069.png'),
-                        pygame.image.load('personagens/menina_03/M03_0070.png'),
-                        pygame.image.load('personagens/menina_03/M03_0071.png'),
-                        pygame.image.load('personagens/menina_03/M03_0072.png'),
-                        pygame.image.load('personagens/menina_03/M03_0073.png'),
-                        pygame.image.load('personagens/menina_03/M03_0074.png'),
-                        pygame.image.load('personagens/menina_03/M03_0075.png'),
-                        pygame.image.load('personagens/menina_03/M03_0076.png'),
-                        pygame.image.load('personagens/menina_03/M03_0077.png'),
-                        pygame.image.load('personagens/menina_03/M03_0078.png'),
-                        pygame.image.load('personagens/menina_03/M03_0079.png'),
-                        pygame.image.load('personagens/menina_03/M03_0080.png'),
-                        pygame.image.load('personagens/menina_03/M03_0081.png'),
-                        pygame.image.load('personagens/menina_03/M03_0082.png'),
-                        pygame.image.load('personagens/menina_03/M03_0083.png'),
-                        pygame.image.load('personagens/menina_03/M03_0084.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0002.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0003.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0004.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0005.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0006.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0007.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0008.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0009.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0010.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0011.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0012.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0013.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0014.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0015.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0016.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0017.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0018.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0019.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0020.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0021.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0022.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0023.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0024.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0025.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0026.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0027.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0028.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0029.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0030.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0031.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0032.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0033.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0034.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0035.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0036.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0037.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0038.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0039.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0040.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0041.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0042.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0043.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0044.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0045.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0046.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0047.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0048.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0049.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0050.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0051.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0052.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0053.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0054.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0055.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0056.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0057.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0058.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0059.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0060.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0061.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0062.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0063.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0064.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0065.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0066.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0067.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0068.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0069.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0070.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0071.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0072.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0073.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0074.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0075.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0076.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0077.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0078.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0079.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0080.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0081.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0082.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0083.png'),
+                        pygame.image.load(
+                            'personagens/menina_03/M03_0084.png'),
                         pygame.image.load('personagens/menina_03/M03_0085.png')]
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
@@ -791,93 +1142,177 @@ class Menina3(pygame.sprite.Sprite):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
+
 class Menina4(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, peso):
         super().__init__()
         self.sprites = [pygame.image.load('personagens/menina_04/M04_0001.png'),
-                        pygame.image.load('personagens/menina_04/M04_0002.png'),
-                        pygame.image.load('personagens/menina_04/M04_0003.png'),
-                        pygame.image.load('personagens/menina_04/M04_0004.png'),
-                        pygame.image.load('personagens/menina_04/M04_0005.png'),
-                        pygame.image.load('personagens/menina_04/M04_0006.png'),
-                        pygame.image.load('personagens/menina_04/M04_0007.png'),
-                        pygame.image.load('personagens/menina_04/M04_0008.png'),
-                        pygame.image.load('personagens/menina_04/M04_0009.png'),
-                        pygame.image.load('personagens/menina_04/M04_0010.png'),
-                        pygame.image.load('personagens/menina_04/M04_0011.png'),
-                        pygame.image.load('personagens/menina_04/M04_0012.png'),
-                        pygame.image.load('personagens/menina_04/M04_0013.png'),
-                        pygame.image.load('personagens/menina_04/M04_0014.png'),
-                        pygame.image.load('personagens/menina_04/M04_0015.png'),
-                        pygame.image.load('personagens/menina_04/M04_0016.png'),
-                        pygame.image.load('personagens/menina_04/M04_0017.png'),
-                        pygame.image.load('personagens/menina_04/M04_0018.png'),
-                        pygame.image.load('personagens/menina_04/M04_0019.png'),
-                        pygame.image.load('personagens/menina_04/M04_0020.png'),
-                        pygame.image.load('personagens/menina_04/M04_0021.png'),
-                        pygame.image.load('personagens/menina_04/M04_0022.png'),
-                        pygame.image.load('personagens/menina_04/M04_0023.png'),
-                        pygame.image.load('personagens/menina_04/M04_0024.png'),
-                        pygame.image.load('personagens/menina_04/M04_0025.png'),
-                        pygame.image.load('personagens/menina_04/M04_0026.png'),
-                        pygame.image.load('personagens/menina_04/M04_0027.png'),
-                        pygame.image.load('personagens/menina_04/M04_0028.png'),
-                        pygame.image.load('personagens/menina_04/M04_0029.png'),
-                        pygame.image.load('personagens/menina_04/M04_0030.png'),
-                        pygame.image.load('personagens/menina_04/M04_0031.png'),
-                        pygame.image.load('personagens/menina_04/M04_0032.png'),
-                        pygame.image.load('personagens/menina_04/M04_0033.png'),
-                        pygame.image.load('personagens/menina_04/M04_0034.png'),
-                        pygame.image.load('personagens/menina_04/M04_0035.png'),
-                        pygame.image.load('personagens/menina_04/M04_0036.png'),
-                        pygame.image.load('personagens/menina_04/M04_0037.png'),
-                        pygame.image.load('personagens/menina_04/M04_0038.png'),
-                        pygame.image.load('personagens/menina_04/M04_0039.png'),
-                        pygame.image.load('personagens/menina_04/M04_0040.png'),
-                        pygame.image.load('personagens/menina_04/M04_0041.png'),
-                        pygame.image.load('personagens/menina_04/M04_0042.png'),
-                        pygame.image.load('personagens/menina_04/M04_0043.png'),
-                        pygame.image.load('personagens/menina_04/M04_0044.png'),
-                        pygame.image.load('personagens/menina_04/M04_0045.png'),
-                        pygame.image.load('personagens/menina_04/M04_0046.png'),
-                        pygame.image.load('personagens/menina_04/M04_0047.png'),
-                        pygame.image.load('personagens/menina_04/M04_0048.png'),
-                        pygame.image.load('personagens/menina_04/M04_0049.png'),
-                        pygame.image.load('personagens/menina_04/M04_0050.png'),
-                        pygame.image.load('personagens/menina_04/M04_0051.png'),
-                        pygame.image.load('personagens/menina_04/M04_0052.png'),
-                        pygame.image.load('personagens/menina_04/M04_0053.png'),
-                        pygame.image.load('personagens/menina_04/M04_0054.png'),
-                        pygame.image.load('personagens/menina_04/M04_0055.png'),
-                        pygame.image.load('personagens/menina_04/M04_0056.png'),
-                        pygame.image.load('personagens/menina_04/M04_0057.png'),
-                        pygame.image.load('personagens/menina_04/M04_0058.png'),
-                        pygame.image.load('personagens/menina_04/M04_0059.png'),
-                        pygame.image.load('personagens/menina_04/M04_0060.png'),
-                        pygame.image.load('personagens/menina_04/M04_0061.png'),
-                        pygame.image.load('personagens/menina_04/M04_0062.png'),
-                        pygame.image.load('personagens/menina_04/M04_0063.png'),
-                        pygame.image.load('personagens/menina_04/M04_0064.png'),
-                        pygame.image.load('personagens/menina_04/M04_0065.png'),
-                        pygame.image.load('personagens/menina_04/M04_0066.png'),
-                        pygame.image.load('personagens/menina_04/M04_0067.png'),
-                        pygame.image.load('personagens/menina_04/M04_0068.png'),
-                        pygame.image.load('personagens/menina_04/M04_0069.png'),
-                        pygame.image.load('personagens/menina_04/M04_0070.png'),
-                        pygame.image.load('personagens/menina_04/M04_0071.png'),
-                        pygame.image.load('personagens/menina_04/M04_0072.png'),
-                        pygame.image.load('personagens/menina_04/M04_0073.png'),
-                        pygame.image.load('personagens/menina_04/M04_0074.png'),
-                        pygame.image.load('personagens/menina_04/M04_0075.png'),
-                        pygame.image.load('personagens/menina_04/M04_0076.png'),
-                        pygame.image.load('personagens/menina_04/M04_0077.png'),
-                        pygame.image.load('personagens/menina_04/M04_0078.png'),
-                        pygame.image.load('personagens/menina_04/M04_0079.png'),
-                        pygame.image.load('personagens/menina_04/M04_0080.png'),
-                        pygame.image.load('personagens/menina_04/M04_0081.png'),
-                        pygame.image.load('personagens/menina_04/M04_0082.png'),
-                        pygame.image.load('personagens/menina_04/M04_0083.png'),
-                        pygame.image.load('personagens/menina_04/M04_0084.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0002.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0003.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0004.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0005.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0006.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0007.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0008.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0009.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0010.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0011.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0012.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0013.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0014.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0015.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0016.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0017.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0018.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0019.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0020.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0021.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0022.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0023.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0024.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0025.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0026.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0027.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0028.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0029.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0030.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0031.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0032.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0033.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0034.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0035.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0036.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0037.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0038.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0039.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0040.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0041.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0042.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0043.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0044.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0045.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0046.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0047.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0048.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0049.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0050.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0051.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0052.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0053.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0054.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0055.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0056.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0057.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0058.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0059.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0060.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0061.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0062.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0063.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0064.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0065.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0066.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0067.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0068.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0069.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0070.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0071.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0072.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0073.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0074.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0075.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0076.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0077.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0078.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0079.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0080.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0081.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0082.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0083.png'),
+                        pygame.image.load(
+                            'personagens/menina_04/M04_0084.png'),
                         pygame.image.load('personagens/menina_04/M04_0085.png')]
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
@@ -900,10 +1335,26 @@ class Menina4(pygame.sprite.Sprite):
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
+
+
+class Loja_fundo(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((350, 1000))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+
+    def update(self):
+        self.titulo()
+
+    def titulo(self): #PRECISA FAZER APARECER NA FRENTE DO BACKGROUND DA LOJA
+        texto('LOJA', fonte, (255, 255, 255), screen, 325, 125)
 #-------------------------#
 
-click = False
 
+click = False
 
 
 def gui():
@@ -978,70 +1429,6 @@ def mute(status):
         som_on = True
 
 
-def jogo():
-    peso = 3
-    barra = pygame.Rect(125, 400, 800, 50)
-    #fundo = pygame.Rect(0, 0, )
-    acer = Acerto(475, 400)
-    pont = Ponteiro(125, 400)
-    player1 = Player(40, 40, peso)
-    jogo_sprites = pygame.sprite.Group()
-    jogo_sprites.add(acer)
-    jogo_sprites.add(pont)
-    jogo_sprites.add(player1)
-    jogo_sprites.add(player1.peso)
-    # game loop
-    running = True
-    while running:
-        global comprimento
-        screen.fill((0, 0, 0))
-        screen.blit(background, (0, 0))
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-
-        pygame.draw.rect(screen, (169, 169, 169), barra)
-        b_emagrece = pygame.Rect(10, 100, 170, 50)
-        b_engordar = pygame.Rect(10, 10, 170, 50)
-        b_treinar = pygame.Rect(300, 10, 170, 50)
-        if b_engordar.collidepoint((mouse_x, mouse_y)):
-            if click:
-                acer.engorda()
-        if b_emagrece.collidepoint((mouse_x, mouse_y)):
-            if click:
-                acer.emagrece()
-        if b_treinar.collidepoint((mouse_x, mouse_y)):
-            if click:
-                pont.treinar()
-        pygame.draw.rect(screen, (0, 0, 0), b_treinar, border_radius=15)
-        texto('Treinar', fonte, (255, 255, 255), screen, 325, 25)
-        pygame.draw.rect(screen, (0, 0, 0), b_emagrece, border_radius=15)
-        texto('Comida boa', fonte, (255, 255, 255), screen, 25, 125)
-        pygame.draw.rect(screen, (0, 0, 0), b_engordar, border_radius=15)
-        texto('Comida engorda', fonte, (255, 255, 255), screen, 25, 25)
-        
-        click = False
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click = True
-            if event.type == KEYDOWN:
-                if event.key == pygame.K_UP:
-                    player1.get_food(50)
-            if event.type == KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    player1.get_train(50)
-
-        jogo_sprites.update()
-        jogo_sprites.draw(screen)
-        pygame.display.update()
-        clock.tick(60)
-
-
 def como_jogar():
     barra_display = pygame.Rect(125, 550, 800, 50)
     player_display = Player(50, 30)
@@ -1071,4 +1458,135 @@ def como_jogar():
         clock.tick(60)
 
 
+def jogo():
+    peso = 3
+    jogo_sprites = pygame.sprite.Group()
+    idle1 = Idle(635, 225)
+    jogo_sprites.add(idle1)
+    loja = Loja_fundo(0, 0)
+    # jogo_sprites.add(loja)
+
+    player1 = Player(424, 59, peso)
+    barra = Barra(25, 500)
+    acer = Acerto(275, 500)
+    pont = Ponteiro(25, 500)
+
+    # game loop
+    running = True
+    while running:
+        global comprimento
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        b_treino = pygame.Rect(300, 100, 170, 50)
+        b_emagrece = pygame.Rect(10, 100, 170, 50)
+        b_engordar = pygame.Rect(10, 10, 170, 50)
+        b_treinar = pygame.Rect(300, 10, 170, 50)
+        if b_treino.collidepoint((mouse_x, mouse_y)):
+            if click:
+                jogo_sprites.remove(idle1)
+                jogo_sprites.remove(loja)
+                jogo_sprites.add(barra)
+                jogo_sprites.add(acer)
+                jogo_sprites.add(pont)
+                jogo_sprites.add(player1)
+                jogo_sprites.add(player1.peso)
+        if b_engordar.collidepoint((mouse_x, mouse_y)):
+            if click:
+                acer.engorda()
+        if b_emagrece.collidepoint((mouse_x, mouse_y)):
+            if click:
+                acer.emagrece()
+        if b_treinar.collidepoint((mouse_x, mouse_y)):
+            if click:
+                pont.treinar()
+        pygame.draw.rect(screen, (0, 0, 0), b_treino, border_radius=15)
+        texto('Treino', fonte, (255, 255, 255), screen, 325, 125)
+        pygame.draw.rect(screen, (0, 0, 0), b_treinar, border_radius=15)
+        texto('Treinar', fonte, (255, 255, 255), screen, 325, 25)
+        pygame.draw.rect(screen, (0, 0, 0), b_emagrece, border_radius=15)
+        texto('Comida boa', fonte, (255, 255, 255), screen, 25, 125)
+        pygame.draw.rect(screen, (0, 0, 0), b_engordar, border_radius=15)
+        texto('Comida engorda', fonte, (255, 255, 255), screen, 25, 25)
+
+        click = False
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+            if event.type == KEYDOWN:
+                if event.key == pygame.K_UP:
+                    player1.get_food(50)
+            if event.type == KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    player1.get_train(50)
+
+        jogo_sprites.update()
+        jogo_sprites.draw(screen)
+        pygame.display.update()
+        clock.tick(60)
+
+
 gui()
+
+
+# def jogo2():
+
+#     jogo_sprites = pygame.sprite.Group()
+#     # game loop
+#     running = True
+#     while running:
+#         global comprimento
+#         screen.fill((0, 0, 0))
+#         screen.blit(background, (0, 0))
+#         screen.blit(idle, (630, 225))
+#         mouse_x, mouse_y = pygame.mouse.get_pos()
+
+#         b_emagrece = pygame.Rect(10, 100, 170, 50)
+#         b_engordar = pygame.Rect(10, 10, 170, 50)
+#         b_treinar = pygame.Rect(300, 10, 170, 50)
+#         if b_engordar.collidepoint((mouse_x, mouse_y)):
+#             if click:
+#                 acer.engorda()
+#         if b_emagrece.collidepoint((mouse_x, mouse_y)):
+#             if click:
+#                 acer.emagrece()
+#         if b_treinar.collidepoint((mouse_x, mouse_y)):
+#             if click:
+#                 pont.treinar()
+#         pygame.draw.rect(screen, (0, 0, 0), b_treinar, border_radius=15)
+#         texto('Treinar', fonte, (255, 255, 255), screen, 325, 25)
+#         pygame.draw.rect(screen, (0, 0, 0), b_emagrece, border_radius=15)
+#         texto('Comida boa', fonte, (255, 255, 255), screen, 25, 125)
+#         pygame.draw.rect(screen, (0, 0, 0), b_engordar, border_radius=15)
+#         texto('Comida engorda', fonte, (255, 255, 255), screen, 25, 25)
+
+#         click = False
+#         for event in pygame.event.get():
+#             if event.type == KEYDOWN:
+#                 if event.key == K_ESCAPE:
+#                     running = False
+#             if event.type == QUIT:
+#                 pygame.quit()
+#                 sys.exit()
+#             if event.type == MOUSEBUTTONDOWN:
+#                 if event.button == 1:
+#                     click = True
+#             if event.type == KEYDOWN:
+#                 if event.key == pygame.K_UP:
+#                     player1.get_food(50)
+#             if event.type == KEYDOWN:
+#                 if event.key == pygame.K_DOWN:
+#                     player1.get_train(50)
+
+#         jogo_sprites.update()
+#         jogo_sprites.draw(screen)
+#         pygame.display.update()
+#         clock.tick(60)
