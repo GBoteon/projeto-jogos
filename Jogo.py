@@ -51,38 +51,26 @@ close_store_image_filename = 'icones/close_store.svg'
 
 background = pygame.image.load(background_image_filename).convert()
 background2 = pygame.image.load(background_image_filename2).convert()
-background_loja = pygame.transform.scale(pygame.image.load(
-    background_image_loja), (350, 475)).convert_alpha()
+background_loja = pygame.transform.scale(pygame.image.load(background_image_loja), (350, 475)).convert_alpha()
 idle = pygame.image.load(idle_image_filename).convert_alpha()
 title = pygame.image.load(title_image_filename).convert_alpha()
 volume = pygame.image.load(volume_image_filename).convert_alpha()
 mutado = pygame.image.load(mutado_image_filename).convert_alpha()
-hunger = pygame.transform.scale(pygame.image.load(
-    hunger_image_filename), (50, 50)).convert_alpha()
-energy = pygame.transform.scale(pygame.image.load(
-    energy_image_filename), (50, 50)).convert_alpha()
-cama = pygame.transform.scale(pygame.image.load(
-    cama_image_filename), (100, 100)).convert_alpha()
-loja = pygame.transform.scale(pygame.image.load(
-    loja_image_filename), (100, 100)).convert_alpha()
-halter = pygame.transform.scale(pygame.image.load(
-    halter_image_filename), (100, 100)).convert_alpha()
-podio = pygame.transform.scale(pygame.image.load(
-    podio_image_filename), (100, 100)).convert_alpha()
-comida_hamburguer = pygame.transform.scale(pygame.image.load(
-    comida_hamburguer_image_filename), (85, 85)).convert_alpha()
-comida_refri = pygame.transform.scale(pygame.image.load(
-    comida_refri_image_filename), (85, 85)).convert_alpha()
-comida_saudavel = pygame.transform.scale(pygame.image.load(
-    comida_saudavel_image_filename), (85, 85)).convert_alpha()
-comida_whey = pygame.transform.scale(pygame.image.load(
-    comida_whey_image_filename), (85, 85)).convert_alpha()
-botao_fechar_loja = pygame.transform.scale(pygame.image.load(
-    close_store_image_filename), (25, 25)).convert_alpha()
+hunger = pygame.transform.scale(pygame.image.load(hunger_image_filename), (50, 50)).convert_alpha()
+energy = pygame.transform.scale(pygame.image.load(energy_image_filename), (50, 50)).convert_alpha()
+cama = pygame.transform.scale(pygame.image.load(cama_image_filename), (100, 100)).convert_alpha()
+loja = pygame.transform.scale(pygame.image.load(loja_image_filename), (100, 100)).convert_alpha()
+halter = pygame.transform.scale(pygame.image.load(halter_image_filename), (100, 100)).convert_alpha()
+podio = pygame.transform.scale(pygame.image.load(podio_image_filename), (100, 100)).convert_alpha()
+comida_hamburguer = pygame.transform.scale(pygame.image.load(comida_hamburguer_image_filename), (85, 85)).convert_alpha()
+comida_refri = pygame.transform.scale(pygame.image.load(comida_refri_image_filename), (85, 85)).convert_alpha()
+comida_saudavel = pygame.transform.scale(pygame.image.load(comida_saudavel_image_filename), (85, 85)).convert_alpha()
+comida_whey = pygame.transform.scale(pygame.image.load(comida_whey_image_filename), (85, 85)).convert_alpha()
+botao_fechar_loja = pygame.transform.scale(pygame.image.load(close_store_image_filename), (25, 25)).convert_alpha()
 
 volume_alpha = 500
 mutado_alpha = 0
-# ---------------------------#
+# --------------------------
 
 # ---------[SONS]---------#
 pygame.mixer.init()
@@ -1526,7 +1514,6 @@ class Items_loja(pygame.sprite.Sprite):
         self.rect.y = pos_y
         self.preco = preco
         self.spriteGroup = spriteGroup
-        self.open = False
         self.texto = Texto('COMPRAR', fonte_loja, (255, 255, 255),
                            background_loja, (self.rect.x + 45), (self.rect.y - 60))
         self.texto_preco = Texto(('$' + str(self.preco)), fonte_loja, (MONEY),
@@ -1538,11 +1525,9 @@ class Items_loja(pygame.sprite.Sprite):
 
     def abrir(self):
         self.spriteGroup.add(self)
-        self.open = True
 
     def fechar(self):
         self.spriteGroup.remove(self)
-        self.open = False
 
     def comprar(self):
         self.texto.imprimir()
@@ -1556,15 +1541,12 @@ class Botao_fechar_loja(pygame.sprite.Sprite):
         self.rect.x = pos_x
         self.rect.y = pos_y
         self.spriteGroup = spriteGroup
-        self.open = False
 
     def abrir(self):
         self.spriteGroup.add(self)
-        self.open = True
 
     def fechar(self):
         self.spriteGroup.remove(self)
-        self.open = False
 
 
 class Loja(pygame.sprite.Sprite):
