@@ -506,66 +506,22 @@ class Peso3(pygame.sprite.Sprite):
 
 
 class Idle(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, spriteGroup):
         pygame.sprite.Sprite.__init__(self)
         self.image = idle
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
         self.rect.y = pos_y
+        self.spriteGroup = spriteGroup
         self.open = False
-        self.current_money = dinheiro
-        self.salary = 100
-        self.current_hunger = fome
-        self.maximum_hunger = 200
-        self.hunger_bar_lenght = 200
-        self.hunger_ratio = self.maximum_hunger / self.hunger_bar_lenght
-        self.current_energy = energia
-        self.maximum_energy = 200
-        self.energy_bar_lenght = 200
-        self.energy_ratio = self.maximum_energy / self.energy_bar_lenght
 
-    def update(self):
-        self.basic_hunger()
-        self.basic_energy()
+    def fechar(self):
+        self.spriteGroup.remove(self)
+        self.open = False
 
-    def basic_money(self):
-        self.current_money += self.salary
-        texto("$ " + str(self.current_money), dindin, (6, 152, 0), screen, 770, 120)
-
-    def get_train(self, amount):
-        if self.current_hunger > 0:
-            self.current_hunger -= amount
-        if self.current_hunger <= 0:
-            self.current_hunger = 0
-
-    def get_food(self, amount):
-        if self.current_hunger < self.maximum_hunger:
-            self.current_hunger += amount
-        if self.current_hunger >= self.maximum_hunger:
-            self.current_hunger = self.maximum_hunger
-
-    def basic_hunger(self):
-        pygame.draw.rect(screen, (236, 124, 48), (770, 80, self.current_hunger / self.hunger_ratio, 25))
-        pygame.draw.rect(screen, (255, 255, 255), (770, 80, self.hunger_bar_lenght, 25), 4)
-        screen.blit(hunger, (750, 65))
-
-    def get_tired(self, amount):
-        if self.current_energy > 0:
-            self.current_energy -= amount
-        if self.current_energy <= 0:
-            self.current_energy = 0
-
-    def get_rest(self, amount):
-        if self.current_energy < self.maximum_energy:
-            self.current_energy += amount
-        if self.current_energy >= self.maximum_energy:
-            self.current_energy = self.maximum_energy
-
-    def basic_energy(self):
-        pygame.draw.rect(screen, (255, 255, 0), (770, 20, self.current_energy / self.energy_ratio, 25))
-        pygame.draw.rect(screen, (255, 255, 255), (770, 20, self.energy_bar_lenght, 25), 4)
-        screen.blit(energy, (750, 10))
-
+    def abrir(self):
+        self.spriteGroup.add(self)
+        self.open = True
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, peso, spriteGroup):
@@ -659,6 +615,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
         self.spriteGroup = spriteGroup
         self.open = False
+        self.idle = Idle((pos_x + 211), (pos_y + 166), spriteGroup)
 
         if peso == 1:
             self.peso = Peso1((pos_x + 159), (pos_y + 174), spriteGroup)
@@ -681,11 +638,11 @@ class Player(pygame.sprite.Sprite):
         self.maximum_energy = 200
         self.energy_bar_lenght = 200
         self.energy_ratio = self.maximum_energy / self.energy_bar_lenght
-        self.image = self.sprites[self.current_sprite]
 
     def update(self):
-        self.basic_hunger()
-        self.basic_energy()
+        # self.basic_money()
+        # self.basic_hunger()
+        # self.basic_energy()
         self.current_sprite += 1
 
         if self.current_sprite >= len(self.sprites):
@@ -693,8 +650,20 @@ class Player(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 
     def basic_money(self):
-        self.current_money += self.salary
         texto("$ " + str(self.current_money), dindin, (6, 152, 0), screen, 770, 120)
+
+    def get_money(self):
+        global dinheiro
+        self.current_money += self.salary
+        dinheiro = self.current_money
+
+    def lost_money(self, amout):
+        global dinheiro
+        self.current_money -= amout
+        dinheiro = self.current_money
+
+    def set_salario(self, amount):
+        self.salary = amount
 
     def get_train(self, amount):
         if self.current_hunger > 0:
@@ -729,6 +698,12 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (255, 255, 0), (770, 20, self.current_energy / self.energy_ratio, 25))
         pygame.draw.rect(screen, (255, 255, 255), (770, 20, self.energy_bar_lenght, 25), 4)
         screen.blit(energy, (750, 10))
+
+    def call_idle(self):
+        self.idle.abrir()
+
+    def close_idle(self):
+        self.idle.fechar()
 
     def fechar(self):
         self.spriteGroup.remove(self)
@@ -1128,7 +1103,14 @@ class Loja_fundo(pygame.sprite.Sprite):
         self.spriteGroup.add(self)
         self.open = True
 
+class Loja(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, spriteGroup):
+        pygame.sprite.Sprite.__init__(self)
+        self.spriteGroup = spriteGroup
+        self.loja_fundo = Loja_fundo(pos_x, pos_y, spriteGroup)
 
+    def update(self):
+        texto('LOJA', fonte, (255, 255, 255), screen, 10, 105)
 # -------------------------#
 
 
@@ -1210,12 +1192,13 @@ def mute(status):
 def como_jogar():
     como_jogar_sprites = pygame.sprite.Group()
     barra_display = Barra(125, 550, como_jogar_sprites)
-    player_display = Menina3(50, 30, 1, como_jogar_sprites)
+    player_display = Player(50, 30, 1, como_jogar_sprites)
     pont_display = Ponteiro(125, 550, como_jogar_sprites)
     acer_display = Acerto(475, 550, como_jogar_sprites)
 
     barra_display.abrir()
-    player_display.abrir()
+    #player_display.abrir()
+    player_display.call_idle()
     pont_display.abrir()
     acer_display.abrir()
     running = True
@@ -1240,13 +1223,12 @@ def como_jogar():
 def jogo():
     peso = 2
     jogo_sprites = pygame.sprite.Group()
-    idle1 = Idle(635, 225)
-    loja1 = Loja_fundo(0, 150, jogo_sprites)
+    loja1 = Loja(0, 150, jogo_sprites)
     player1 = Player(424, 59, peso, jogo_sprites)
     barra = Barra(25, 500, jogo_sprites)
     acer = Acerto(275, 500, jogo_sprites)
     pont = Ponteiro(25, 500, jogo_sprites)
-    jogo_sprites.add(idle1)
+    player1.call_idle()
     # game loop
     running = True
     while running:
@@ -1267,27 +1249,24 @@ def jogo():
 
         if b_cama.collidepoint((mouse_x, mouse_y)):
             if click:
-                idle1.current_energy = 200
                 player1.current_energy = 200
                 dia += 1
-        if not loja1.open:
+        if not loja1.loja_fundo.open:
             if b_loja.collidepoint((mouse_x, mouse_y)) and click:
-                loja1.abrir()
-                texto('LOJA', fonte, (255, 255, 255), screen, 10, 125)
-        if loja1.open:
+                loja1.loja_fundo.abrir()
+        if loja1.loja_fundo.open:
             if b_fechar.collidepoint((mouse_x, mouse_y)) and click:
-                loja1.fechar()
+                player1.fechar()
+                player1.call_idle()
 
         if b_treino.collidepoint((mouse_x, mouse_y)):
             if click:
-                jogo_sprites.remove(idle1)
-                jogo_sprites.remove(loja1)
-                loja1.fechar()
-                jogo_sprites.add(barra)
-                jogo_sprites.add(acer)
-                jogo_sprites.add(pont)
-                jogo_sprites.add(player1)
-                jogo_sprites.add(player1.peso)
+                loja1.loja_fundo.fechar()
+                player1.close_idle()
+                player1.abrir()
+                barra.abrir()
+                acer.abrir()
+                pont.abrir()
                 player1.current_energy -= 25
         if b_competição.collidepoint((mouse_x, mouse_y)):
             if click:
@@ -1312,6 +1291,9 @@ def jogo():
                     player1.get_train(50)
 
         jogo_sprites.update()
+        player1.basic_energy()
+        player1.basic_hunger()
+        player1.basic_money()
         jogo_sprites.draw(screen)
         pygame.display.update()
         clock.tick(60)
