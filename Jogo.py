@@ -51,22 +51,34 @@ close_store_image_filename = 'icones/close_store.svg'
 
 background = pygame.image.load(background_image_filename).convert()
 background2 = pygame.image.load(background_image_filename2).convert()
-background_loja = pygame.transform.scale(pygame.image.load(background_image_loja), (350, 475)).convert_alpha()
+background_loja = pygame.transform.scale(pygame.image.load(
+    background_image_loja), (350, 475)).convert_alpha()
 idle = pygame.image.load(idle_image_filename).convert_alpha()
 title = pygame.image.load(title_image_filename).convert_alpha()
 volume = pygame.image.load(volume_image_filename).convert_alpha()
 mutado = pygame.image.load(mutado_image_filename).convert_alpha()
-hunger = pygame.transform.scale(pygame.image.load(hunger_image_filename), (50, 50)).convert_alpha()
-energy = pygame.transform.scale(pygame.image.load(energy_image_filename), (50, 50)).convert_alpha()
-cama = pygame.transform.scale(pygame.image.load(cama_image_filename), (100, 100)).convert_alpha()
-loja = pygame.transform.scale(pygame.image.load(loja_image_filename), (100, 100)).convert_alpha()
-halter = pygame.transform.scale(pygame.image.load(halter_image_filename), (100, 100)).convert_alpha()
-podio = pygame.transform.scale(pygame.image.load(podio_image_filename), (100, 100)).convert_alpha()
-comida_hamburguer = pygame.transform.scale(pygame.image.load(comida_hamburguer_image_filename), (85, 85)).convert_alpha()
-comida_refri = pygame.transform.scale(pygame.image.load(comida_refri_image_filename), (85, 85)).convert_alpha()
-comida_saudavel = pygame.transform.scale(pygame.image.load(comida_saudavel_image_filename), (85, 85)).convert_alpha()
-comida_whey = pygame.transform.scale(pygame.image.load(comida_whey_image_filename), (85, 85)).convert_alpha()
-botao_fechar_loja = pygame.transform.scale(pygame.image.load(close_store_image_filename), (25, 25)).convert_alpha()
+hunger = pygame.transform.scale(pygame.image.load(
+    hunger_image_filename), (50, 50)).convert_alpha()
+energy = pygame.transform.scale(pygame.image.load(
+    energy_image_filename), (50, 50)).convert_alpha()
+cama = pygame.transform.scale(pygame.image.load(
+    cama_image_filename), (100, 100)).convert_alpha()
+loja = pygame.transform.scale(pygame.image.load(
+    loja_image_filename), (100, 100)).convert_alpha()
+halter = pygame.transform.scale(pygame.image.load(
+    halter_image_filename), (100, 100)).convert_alpha()
+podio = pygame.transform.scale(pygame.image.load(
+    podio_image_filename), (100, 100)).convert_alpha()
+comida_hamburguer = pygame.transform.scale(pygame.image.load(
+    comida_hamburguer_image_filename), (85, 85)).convert_alpha()
+comida_refri = pygame.transform.scale(pygame.image.load(
+    comida_refri_image_filename), (85, 85)).convert_alpha()
+comida_saudavel = pygame.transform.scale(pygame.image.load(
+    comida_saudavel_image_filename), (85, 85)).convert_alpha()
+comida_whey = pygame.transform.scale(pygame.image.load(
+    comida_whey_image_filename), (85, 85)).convert_alpha()
+botao_fechar_loja = pygame.transform.scale(pygame.image.load(
+    close_store_image_filename), (25, 25)).convert_alpha()
 
 volume_alpha = 500
 mutado_alpha = 0
@@ -84,6 +96,13 @@ fonte = pygame.font.SysFont('roboto', 20)
 fonte_loja = pygame.font.SysFont('roboto', 15, bold=False)
 dindin = pygame.font.SysFont('roboto', 60)
 
+def imprimir(texto, fonte, cor, surface, x, y):
+    texto = fonte.render(texto, 1, cor)
+    texto_posi = texto.get_rect()
+    texto_posi.topleft = (x, y)
+    surface.blit(texto, texto_posi)
+
+    # return texto.get_rect()
 
 class Texto(pygame.sprite.Sprite):
     def __init__(self, texto, fonte, cor, surface, x, y):
@@ -97,7 +116,7 @@ class Texto(pygame.sprite.Sprite):
         self.surface.blit(self.texto, self.rect)
 
     def get_rect(self):
-        return pygame.Rect(self.rect)
+        return self.texto.get_rect()
 
 # -------------------------#
 
@@ -751,11 +770,11 @@ class Player(pygame.sprite.Sprite):
         self.maximum_energy = 200
         self.energy_bar_lenght = 200
         self.energy_ratio = self.maximum_energy / self.energy_bar_lenght
-        self.texto = Texto("$ " + str(self.current_money),
-                           dindin, (MONEY), screen, 770, 120)
+        # self.texto = Texto("$ " + str(self.current_money),
+        #                    dindin, (MONEY), screen, 770, 120)
 
     def update(self):
-        # self.basic_money()
+        self.basic_money()
         # self.basic_hunger()
         # self.basic_energy()
         self.current_sprite += 1
@@ -765,7 +784,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 
     def basic_money(self):
-        self.texto.imprimir()
+        imprimir("$ " + str(self.current_money), dindin, (6, 152, 0), screen, 770, 120)
+        # self.texto.imprimir()
 
     def get_money(self):
         global dinheiro
@@ -1514,14 +1534,11 @@ class Items_loja(pygame.sprite.Sprite):
         self.rect.y = pos_y
         self.preco = preco
         self.spriteGroup = spriteGroup
-        self.texto = Texto('COMPRAR', fonte_loja, (255, 255, 255),
-                           background_loja, (self.rect.x + 45), (self.rect.y - 60))
         self.texto_preco = Texto(('$' + str(self.preco)), fonte_loja, (MONEY),
-                                 background_loja, (self.rect.x + -5), (self.rect.y - 60))
+                                 background_loja, (self.rect.x + 15), (self.rect.y - 60))
 
     def update(self):
         self.texto_preco.imprimir()
-        self.comprar()
 
     def abrir(self):
         self.spriteGroup.add(self)
@@ -1529,8 +1546,6 @@ class Items_loja(pygame.sprite.Sprite):
     def fechar(self):
         self.spriteGroup.remove(self)
 
-    def comprar(self):
-        self.texto.imprimir()
 
 
 class Botao_fechar_loja(pygame.sprite.Sprite):
@@ -1720,7 +1735,10 @@ def jogo():
 
         if loja1.loja_fundo.open:
             b_fechar_loja = loja1.loja_fundo.botao_fechar.rect
-            b_comprar_hamburguer = loja1.loja_fundo.hamburguer.texto.rect
+            b_comprar_hamburguer = loja1.loja_fundo.hamburguer.rect
+            b_comprar_refri = loja1.loja_fundo.refri.rect
+            b_comprar_saudavel = loja1.loja_fundo.saudavel.rect
+            b_comprar_whey = loja1.loja_fundo.whey.rect
 
             if b_fechar_loja.collidepoint((mouse_x, mouse_y)) and click:
                 loja1.loja_fundo.fechar()
@@ -1730,8 +1748,16 @@ def jogo():
                 pont.fechar()
 
             if b_comprar_hamburguer.collidepoint((mouse_x, mouse_y)) and click:
-                print('deu certo')
                 player1.lost_money(v_hamburguer)
+
+            if b_comprar_refri.collidepoint((mouse_x, mouse_y)) and click:
+                player1.lost_money(v_refri)
+
+            if b_comprar_saudavel.collidepoint((mouse_x, mouse_y)) and click:
+                player1.lost_money(v_saudavel)
+
+            if b_comprar_whey.collidepoint((mouse_x, mouse_y)) and click:
+                player1.lost_money(v_whey)
 
         if b_treino.collidepoint((mouse_x, mouse_y)):
             if click:
