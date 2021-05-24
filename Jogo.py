@@ -39,6 +39,7 @@ volume_image_filename = 'volume.svg'
 mutado_image_filename = 'mute.svg'
 hunger_image_filename = 'icones/fome.png'
 energy_image_filename = 'icones/forca.png'
+dolar_image_filename = 'icones/dolar.png'
 cama_image_filename = 'icones/cama.png'
 loja_image_filename = 'icones/logo_da_loja.png'
 halter_image_filename = 'icones/halter.png'
@@ -58,6 +59,7 @@ volume = pygame.image.load(volume_image_filename).convert_alpha()
 mutado = pygame.image.load(mutado_image_filename).convert_alpha()
 hunger = pygame.transform.scale(pygame.image.load(hunger_image_filename), (50, 50)).convert_alpha()
 energy = pygame.transform.scale(pygame.image.load(energy_image_filename), (50, 50)).convert_alpha()
+dolar = pygame.transform.scale(pygame.image.load(dolar_image_filename), (40, 40)).convert_alpha()
 cama = pygame.transform.scale(pygame.image.load(cama_image_filename), (100, 100)).convert_alpha()
 loja = pygame.transform.scale(pygame.image.load(
     loja_image_filename), (100, 100)).convert_alpha()
@@ -195,6 +197,8 @@ class Barra(pygame.sprite.Sprite):
         self.rect.x = pos_x
         self.rect.y = pos_y
         self.spriteGroup = spriteGroup
+        self.hittable = False
+        self.acertos = 0
         global comprimento
 
         self.divisao = (600 - comprimento)/2
@@ -211,6 +215,16 @@ class Barra(pygame.sprite.Sprite):
         self.spriteGroup.add(self)
         self.acerto.abrir()
         self.ponteiro.abrir()
+
+    def update(self):
+        if self.ponteiro.rect.x >= self.acerto.rect.x or self.ponteiro.rect.x <= (self.acerto.rect.x + comprimento):
+            self.hittable = True
+        if self.ponteiro.rect.x <= self.acerto.rect.x or self.ponteiro.rect.x >= (self.acerto.rect.x + comprimento):
+            self.hittable = False
+
+    def acertar(self):
+        if self.hittable:
+            self.acertos += 1
 
 # adicionar 159 no x & 174 #
 
@@ -676,7 +690,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.sprites[self.current_sprite]
 
     def basic_money(self):
-        imprimir("$ " + str(self.current_money), dindin, (6, 152, 0), screen, 770, 120)
+        imprimir(str(self.current_money), dindin, (6, 152, 0), screen, 810, 130)
+        screen.blit(dolar, (760, 125))
 
     def get_money(self):
         global dinheiro
@@ -1166,7 +1181,7 @@ class Items_loja(pygame.sprite.Sprite):
         self.rect.y = pos_y
         self.preco = preco
         self.spriteGroup = spriteGroup
-        self.texto_preco = Texto(('$' + str(self.preco)), fonte_loja, (MONEY), background_loja, (self.rect.x + 15), (self.rect.y - 60))
+        self.texto_preco = Texto(('$' + str(self.preco)), fonte_loja, MONEY, background_loja, (self.rect.x + 15), (self.rect.y - 60))
 
     def update(self):
         self.texto_preco.imprimir()
@@ -1242,6 +1257,7 @@ def gui():
         pygame.draw.rect(screen, (0, 0, 0), b_como_jogar, border_radius=15)
         pygame.draw.rect(screen, (0, 0, 0), b_sair, border_radius=15)
 
+
         volume.set_alpha(volume_alpha)
         screen.blit(volume, (709, -200))
         mutado.set_alpha(mutado_alpha)
@@ -1291,13 +1307,14 @@ def mute(status):
 
 def como_jogar():
     como_jogar_sprites = pygame.sprite.Group()
-    barra_display = Barra(250, 550, como_jogar_sprites)
+    barra_display = Barra(250, 150, como_jogar_sprites)
     player_display = Player(-100, 20, 1, como_jogar_sprites)
     me_display = Menina2(150, 20, 1, como_jogar_sprites)
     men_display = Menina3(250, 20, 1, como_jogar_sprites)
     meni_display = Menina4(350, 20, 1, como_jogar_sprites)
     barra_display.abrir()
-    player_display.abrir()
+    me_display.abrir()
+    #meni_display.abrir()
     men_display.abrir()
     running = True
     while running:
@@ -1318,7 +1335,7 @@ def como_jogar():
 
 
 def jogo():
-    peso = 1
+    peso = 3
     jogo_sprites = pygame.sprite.Group()
     loja1 = Loja(0, 150, jogo_sprites)
     player1 = Player(424, 59, peso, jogo_sprites)
@@ -1338,6 +1355,7 @@ def jogo():
         b_loja = screen.blit(loja, (120, 10))
         b_treino = screen.blit(halter, (230, 10))
         b_competicao = screen.blit(podio, (340, 10))
+        acertos = Texto(str(barra.acertos), dindin, (6, 152, 0), screen, 350, 400)
 
         if b_cama.collidepoint((mouse_x, mouse_y)):
             if click:
@@ -1406,7 +1424,20 @@ def jogo():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
+<<<<<<< Updated upstream
             # ---------------#
+=======
+            if event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    barra.acertar()
+
+        if barra.acertos == 10:
+            barra.fechar()
+            player1.fechar()
+            barra.acertos = 0
+
+        acertos.imprimir()
+>>>>>>> Stashed changes
         jogo_sprites.update()
         player1.gui()
         jogo_sprites.draw(screen)
