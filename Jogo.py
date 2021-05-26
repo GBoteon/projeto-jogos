@@ -719,8 +719,7 @@ class Player(pygame.sprite.Sprite):
             self.current_hunger = self.maximum_hunger
 
     def basic_hunger(self):
-        pygame.draw.rect(screen, (236, 124, 48), (770, 80,
-                         self.current_hunger / self.hunger_ratio, 25))
+        pygame.draw.rect(screen, (236, 124, 48), (770, 80,self.current_hunger / self.hunger_ratio, 25))
         pygame.draw.rect(screen, (255, 255, 255),
                          (770, 80, self.hunger_bar_lenght, 25), 4)
         screen.blit(hunger, (750, 65))
@@ -738,8 +737,7 @@ class Player(pygame.sprite.Sprite):
             self.current_energy = self.maximum_energy
 
     def basic_energy(self):
-        pygame.draw.rect(screen, (255, 255, 0), (770, 20,
-                         self.current_energy / self.energy_ratio, 25))
+        pygame.draw.rect(screen, (255, 255, 0), (770, 20,self.current_energy / self.energy_ratio, 25))
         pygame.draw.rect(screen, (255, 255, 255),
                          (770, 20, self.energy_bar_lenght, 25), 4)
         screen.blit(energy, (750, 10))
