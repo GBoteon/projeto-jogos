@@ -17,11 +17,13 @@ MONEY = (6, 152, 0)
 # ------------------------#
 
 # -----[VARIÁVEIS GLOBAIS]-----#
+peso = 1
 engordou = False
 emagreceu = False
 comprimento = 100
 velocidade = 10
 dia = 0
+progressao = 0
 dinheiro = 1000
 fome = 150
 energia = 150
@@ -71,7 +73,8 @@ cama = pygame.transform.scale(pygame.image.load(cama_image_filename), (100, 100)
 loja = pygame.transform.scale(pygame.image.load(loja_image_filename), (100, 100)).convert_alpha()
 halter = pygame.transform.scale(pygame.image.load(halter_image_filename), (100, 100)).convert_alpha()
 podio = pygame.transform.scale(pygame.image.load(podio_image_filename), (100, 100)).convert_alpha()
-comida_hamburguer = pygame.transform.scale(pygame.image.load(comida_hamburguer_image_filename),(85, 85)).convert_alpha()
+comida_hamburguer = pygame.transform.scale(pygame.image.load(comida_hamburguer_image_filename),
+                                           (85, 85)).convert_alpha()
 comida_refri = pygame.transform.scale(pygame.image.load(comida_refri_image_filename), (85, 85)).convert_alpha()
 comida_saudavel = pygame.transform.scale(pygame.image.load(comida_saudavel_image_filename), (85, 85)).convert_alpha()
 comida_whey = pygame.transform.scale(pygame.image.load(comida_whey_image_filename), (85, 85)).convert_alpha()
@@ -95,6 +98,7 @@ som_on = True
 fonte = pygame.font.SysFont(None, 30)
 fonte_loja = pygame.font.SysFont(None, 15, bold=False)
 dindin = pygame.font.SysFont(None, 60)
+
 
 def imprimir(texto, fonte, cor, surface, x, y):
     texto = fonte.render(texto, 1, cor)
@@ -264,6 +268,7 @@ class Barra(pygame.sprite.Sprite):
         n = random.randint(1, 10)
         if n < 6:
             self.rival += 1
+
 
 # adicionar 159 no x & 174 #
 
@@ -1378,41 +1383,46 @@ def como_jogar():
 
 
 def competir():
+    global click, trofeu, peso, progressao
     competicao_sprite = pygame.sprite.Group()
     barra = Barra(200, 50, competicao_sprite)
-    player = Player(-55, 20, 1, competicao_sprite)
+    player = Player(-55, 20, peso, competicao_sprite)
     m = random.randint(2, 4)
+    if progressao == 0:
+        trofeu = trofeu1
+    if progressao == 1:
+        trofeu = trofeu2
+    if progressao == 2:
+        trofeu = trofeu3
     if m == 2:
-        menina = Menina2(370, 20, 1, competicao_sprite)
+        menina = Menina2(370, 20, peso, competicao_sprite)
     if m == 3:
-        menina = Menina3(370, 20, 1, competicao_sprite)
+        menina = Menina3(370, 20, peso, competicao_sprite)
     if m == 4:
-        menina = Menina4(370, 20, 1, competicao_sprite)
+        menina = Menina4(370, 20, peso, competicao_sprite)
     running = True
     barra.scores = False
-    now = 0
-    future = now + 5
     while running:
-        global energia
-        global dia
-        global comprimento
+        global energia, dia, comprimento
         screen.fill((0, 0, 0))
         screen.blit(background2, (0, 0))
         background2.blit(fundo_banner, (15, 180))
         background2.blit(fundo_banner, (805, 180))
-        background2.blit(trofeu1, (455, 400))
+        background2.blit(trofeu, (455, 400))
         mouse_x, mouse_y = pygame.mouse.get_pos()
         menina.abrir()
         player.abrir()
         barra.abrir()
 
-        now = time.time()
+        if barra.acertos == 10:
+            peso += 1
+            progressao += 1
+            dia += 1
+            jogo()
 
-        if now == future:
-            future = now + 5
-            barra.dado()
+        if barra.rival == 10:
+            running = False
 
-        click = False
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -1428,6 +1438,7 @@ def competir():
                     if barra.open:
                         barra.acertar()
 
+        click = False
         competicao_sprite.draw(screen)
         competicao_sprite.update()
         pygame.display.update()
@@ -1435,7 +1446,7 @@ def competir():
 
 
 def jogo():
-    peso = 1
+    global click, peso
     jogo_sprites = pygame.sprite.Group()
     loja1 = Loja(0, 150, jogo_sprites)
     player1 = Player(424, 59, peso, jogo_sprites)
@@ -1444,13 +1455,12 @@ def jogo():
     # game loop
     running = True
     while running:
-        global energia
-        global dia
-        global comprimento
+        global progressao, energia, dia, comprimento
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
+        imprimir("DIA " + str(dia), fonte, (0, 0, 0), screen, 0, 0)
         b_cama = screen.blit(cama, (10, 10))
         b_loja = screen.blit(loja, (120, 10))
         b_treino = screen.blit(halter, (230, 10))
@@ -1458,10 +1468,11 @@ def jogo():
 
         if b_cama.collidepoint((mouse_x, mouse_y)):
             if click:
-                player1.fechar()
-                barra.fechar()
-                player1.current_energy = 200
-                dia += 1
+                if dia != 5 and dia != 10 and dia != 15:
+                    player1.fechar()
+                    barra.fechar()
+                    player1.current_energy = 200
+                    dia += 1
 
         if not loja1.loja_fundo.open:
             if b_loja.collidepoint((mouse_x, mouse_y)) and click:
@@ -1507,7 +1518,8 @@ def jogo():
 
         if b_competicao.collidepoint((mouse_x, mouse_y)):
             if click:
-                competir()
+                if dia == 5 or dia == 10 or dia == 15:
+                    competir()
 
         click = False
         for event in pygame.event.get():
