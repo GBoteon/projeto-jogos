@@ -1427,7 +1427,7 @@ def competir():
     running = True
     barra.scores = False
     while running:
-        global energia, dia, comprimento
+        global energia, dia, comprimento, hit
         screen.fill((0, 0, 0))
         screen.blit(background2, (0, 0))
         background2.blit(fundo_banner, (15, 180))
@@ -1462,6 +1462,11 @@ def competir():
                 if event.key == K_SPACE:
                     if barra.open:
                         barra.acertar()
+                        if barra.hittable and hit == False:
+                            player.get_score(100)
+                            hit = True
+                        if not barra.hittable:
+                            player.lost_score(100)
             if event.type == SECOND:
                 barra.dado()
 
