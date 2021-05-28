@@ -17,6 +17,11 @@ MONEY = (6, 152, 0)
 # ------------------------#
 
 # -----[VARIÁVEIS GLOBAIS]-----#
+hit = False
+multiplicador = 1
+score = 0
+sec = 1500
+trofeu = 0
 peso = 1
 engordou = False
 emagreceu = False
@@ -29,7 +34,7 @@ fome = 150
 energia = 150
 v_hamburguer = 10.0
 v_refri = 5.0
-v_saudavel = 15
+v_saudavel = 15.0
 v_whey = 10.0
 # -----------------------------#
 
@@ -210,10 +215,11 @@ class Barra(pygame.sprite.Sprite):
         self.hittable = False
         self.acertos = 0
         self.erros = 0
+        self.rival = 0
         self.hit = False
         self.open = False
         self.scores = True
-        self.rival = 0
+
         global comprimento
 
         self.divisao = (600 - comprimento) / 2
@@ -234,6 +240,7 @@ class Barra(pygame.sprite.Sprite):
         self.ponteiro.abrir()
 
     def update(self):
+        global hit
         if self.scores:
             self.score()
         if not self.scores:
@@ -243,6 +250,7 @@ class Barra(pygame.sprite.Sprite):
         if self.ponteiro.rect.x <= self.acerto.rect.x or self.ponteiro.rect.x >= (self.acerto.rect.x + comprimento):
             self.hittable = False
             self.hit = False
+            hit = False
 
     def acertar(self):
         if self.hittable and self.hit == False:
@@ -723,6 +731,7 @@ class Player(pygame.sprite.Sprite):
         self.maximum_energy = 200
         self.energy_bar_lenght = 200
         self.energy_ratio = self.maximum_energy / self.energy_bar_lenght
+        self.score = score
 
     def update(self):
         self.current_sprite += 1
@@ -730,6 +739,19 @@ class Player(pygame.sprite.Sprite):
         if self.current_sprite >= len(self.sprites):
             self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
+
+    def basic_score(self):
+        imprimir("SCORE: " + str(self.score), dindin, (0, 0, 0), screen, 700, 590)
+
+    def lost_score(self, amount):
+        global score
+        self.score = score - (amount * multiplicador)
+        score = self.score
+
+    def get_score(self, amount):
+        global score
+        self.score = score + (amount * multiplicador)
+        score = self.score
 
     def basic_money(self):
         imprimir(str(self.current_money), dindin, (6, 152, 0), screen, 810, 130)
@@ -816,6 +838,7 @@ class Player(pygame.sprite.Sprite):
         self.basic_money()
         self.basic_energy()
         self.basic_hunger()
+        self.basic_score()
 
 
 class Menina2(pygame.sprite.Sprite):
@@ -1225,8 +1248,7 @@ class Items_loja(pygame.sprite.Sprite):
         self.rect.y = pos_y
         self.preco = preco
         self.spriteGroup = spriteGroup
-        self.texto_preco = Texto(('$' + str(self.preco)), fonte_loja, MONEY, fundo_transparente, (self.rect.x + 15),
-                                 (self.rect.y - 60))
+        self.texto_preco = Texto(('$' + str(self.preco)), fonte_loja, MONEY, fundo_transparente, (self.rect.x + 15), (self.rect.y - 60))
 
     def update(self):
         self.texto_preco.imprimir()
@@ -1381,10 +1403,9 @@ def como_jogar():
 
 
 def competir():
-    sec = 3000
+    global click, trofeu, peso, progressao, sec
     SECOND = pygame.USEREVENT
     pygame.time.set_timer(SECOND, sec)
-    global click, trofeu, peso, progressao
     competicao_sprite = pygame.sprite.Group()
     barra = Barra(200, 50, competicao_sprite)
     player = Player(-55, 20, peso, competicao_sprite)
@@ -1393,8 +1414,10 @@ def competir():
         trofeu = trofeu1
     if progressao == 1:
         trofeu = trofeu2
+        sec = 1200
     if progressao == 2:
         trofeu = trofeu3
+        sec = 1000
     if m == 2:
         menina = Menina2(370, 20, peso, competicao_sprite)
     if m == 3:
@@ -1409,11 +1432,12 @@ def competir():
         screen.blit(background2, (0, 0))
         background2.blit(fundo_banner, (15, 180))
         background2.blit(fundo_banner, (805, 180))
-        background2.blit(trofeu, (455, 400))
+        screen.blit(trofeu, (455, 400))
         mouse_x, mouse_y = pygame.mouse.get_pos()
         menina.abrir()
         player.abrir()
         barra.abrir()
+        player.basic_score()
 
         if barra.acertos == 10:
             peso += 1
@@ -1458,7 +1482,7 @@ def jogo():
     # game loop
     running = True
     while running:
-        global progressao, energia, dia, comprimento
+        global progressao, energia, dia, comprimento, multiplicador, hit
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -1503,15 +1527,18 @@ def jogo():
             if b_comprar_refri.collidepoint((mouse_x, mouse_y)) and click:
                 player1.lost_money(v_refri)
                 player1.get_food(20)
+                player1.get_score(1)
                 barra.acerto.engorda()
 
             if b_comprar_saudavel.collidepoint((mouse_x, mouse_y)) and click:
                 player1.lost_money(v_saudavel)
                 player1.get_food(50)
+                player1.get_score(1)
                 barra.acerto.emagrece()
 
             if b_comprar_whey.collidepoint((mouse_x, mouse_y)) and click:
                 player1.lost_money(v_whey)
+                multiplicador += 1
 
         if b_treino.collidepoint((mouse_x, mouse_y)):
             if click:
@@ -1539,6 +1566,11 @@ def jogo():
                 if event.key == K_SPACE:
                     if barra.open:
                         barra.acertar()
+                        if barra.hittable and hit == False:
+                            player1.get_score(10)
+                            hit = True
+                        if not barra.hittable:
+                            player1.lost_score(10)
 
         if barra.acertos == 10:
             barra.fechar()
