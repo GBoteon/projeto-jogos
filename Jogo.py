@@ -265,9 +265,7 @@ class Barra(pygame.sprite.Sprite):
         imprimir(str(self.rival), dindin, (6, 152, 0), screen, 885, 230)
 
     def dado(self):
-        n = random.randint(1, 10)
-        if n < 6:
-            self.rival += 1
+        self.rival += 1
 
 
 # adicionar 159 no x & 174 #
@@ -1383,6 +1381,9 @@ def como_jogar():
 
 
 def competir():
+    sec = 3000
+    SECOND = pygame.USEREVENT
+    pygame.time.set_timer(SECOND, sec)
     global click, trofeu, peso, progressao
     competicao_sprite = pygame.sprite.Group()
     barra = Barra(200, 50, competicao_sprite)
@@ -1437,6 +1438,8 @@ def competir():
                 if event.key == K_SPACE:
                     if barra.open:
                         barra.acertar()
+            if event.type == SECOND:
+                barra.dado()
 
         click = False
         competicao_sprite.draw(screen)
