@@ -2,7 +2,6 @@ from pygame.locals import *
 import pygame
 import sys
 import random
-import time
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 625), 0, 32)
@@ -17,6 +16,7 @@ MONEY = (6, 152, 0)
 # ------------------------#
 
 # -----[VARIÁVEIS GLOBAIS]-----#
+salario = 50
 hit = False
 multiplicador = 1
 score = 0
@@ -26,16 +26,17 @@ peso = 1
 engordou = False
 emagreceu = False
 comprimento = 100
-velocidade = 10
+velocidade = 5
 dia = 0
 progressao = 0
-dinheiro = 1000
+dinheiro = 0
 fome = 150
 energia = 150
-v_hamburguer = 10.0
+v_hamburguer = 20.0
 v_refri = 5.0
 v_saudavel = 15.0
-v_whey = 10.0
+v_peru = 25.0
+v_whey = 100.0
 # -----------------------------#
 
 # ---------[IMAGENS]---------#
@@ -56,6 +57,7 @@ podio_image_filename = 'icones/podio.png'
 comida_hamburguer_image_filename = 'icones/comidas/mal_nutritiva/hamburguer.png'
 comida_refri_image_filename = 'icones/comidas/mal_nutritiva/refri.png'
 comida_saudavel_image_filename = 'icones/comidas/saudavel/comida_saudavel.png'
+comida_peru_image_filename = "icones/comidas/saudavel/peru.png"
 comida_whey_image_filename = 'icones/comidas/saudavel/whey.png'
 close_store_image_filename = 'icones/close_store.svg'
 trofeu1_image_filename = 'icones/trofeu_1.png'
@@ -64,6 +66,7 @@ trofeu3_image_filename = 'icones/trofeu_3.png'
 
 background = pygame.image.load(background_image_filename).convert()
 background2 = pygame.image.load(background_image_filename2).convert()
+fundo_tutorial = pygame.image.load(fundo_transparente_image).convert()
 fundo_transparente = pygame.transform.scale(pygame.image.load(fundo_transparente_image), (350, 475)).convert_alpha()
 fundo_trans = pygame.transform.scale(pygame.image.load(fundo_transparente_image), (400, 100)).convert_alpha()
 fundo_banner = pygame.transform.scale(pygame.image.load(fundo_transparente_image), (180, 120)).convert_alpha()
@@ -78,10 +81,10 @@ cama = pygame.transform.scale(pygame.image.load(cama_image_filename), (100, 100)
 loja = pygame.transform.scale(pygame.image.load(loja_image_filename), (100, 100)).convert_alpha()
 halter = pygame.transform.scale(pygame.image.load(halter_image_filename), (100, 100)).convert_alpha()
 podio = pygame.transform.scale(pygame.image.load(podio_image_filename), (100, 100)).convert_alpha()
-comida_hamburguer = pygame.transform.scale(pygame.image.load(comida_hamburguer_image_filename),
-                                           (85, 85)).convert_alpha()
+comida_hamburguer = pygame.transform.scale(pygame.image.load(comida_hamburguer_image_filename),(85, 85)).convert_alpha()
 comida_refri = pygame.transform.scale(pygame.image.load(comida_refri_image_filename), (85, 85)).convert_alpha()
 comida_saudavel = pygame.transform.scale(pygame.image.load(comida_saudavel_image_filename), (85, 85)).convert_alpha()
+comida_peru = pygame.transform.scale(pygame.image.load(comida_peru_image_filename), (85, 85)).convert_alpha()
 comida_whey = pygame.transform.scale(pygame.image.load(comida_whey_image_filename), (85, 85)).convert_alpha()
 botao_fechar_loja = pygame.transform.scale(pygame.image.load(close_store_image_filename), (25, 25)).convert_alpha()
 trofeu1 = pygame.transform.scale(pygame.image.load(trofeu1_image_filename), (85, 85)).convert_alpha()
@@ -103,6 +106,7 @@ som_on = True
 fonte = pygame.font.SysFont(None, 30)
 fonte_loja = pygame.font.SysFont(None, 15, bold=False)
 dindin = pygame.font.SysFont(None, 60)
+txt_dia = pygame.font.SysFont(None, 50)
 
 
 def imprimir(texto, fonte, cor, surface, x, y):
@@ -152,11 +156,13 @@ class Ponteiro(pygame.sprite.Sprite):
 
     def treinar(self):
         global velocidade
-        velocidade += 2
+        if velocidade < 15:
+            velocidade += 1
 
     def perder(self):
         global velocidade
-        velocidade -= 2
+        if velocidade > 1:
+            velocidade -= 1
 
     def fechar(self):
         self.spriteGroup.remove(self)
@@ -274,6 +280,8 @@ class Barra(pygame.sprite.Sprite):
 
     def dado(self):
         self.rival += 1
+
+
 
 
 # adicionar 159 no x & 174 #
@@ -722,7 +730,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
         self.current_money = dinheiro
-        self.salary = 100
+        self.salary = salario
         self.current_hunger = fome
         self.maximum_hunger = 200
         self.hunger_bar_lenght = 200
@@ -768,7 +776,9 @@ class Player(pygame.sprite.Sprite):
         dinheiro = self.current_money
 
     def set_salario(self, amount):
+        global salario
         self.salary = amount
+        salario = amount
 
     def get_train(self, amount):
         global fome
@@ -1207,7 +1217,8 @@ class Loja_fundo(pygame.sprite.Sprite):
         self.hamburguer = Items_loja(25, 200, comida_hamburguer, v_hamburguer, spriteGroup)
         self.refri = Items_loja(180, 200, comida_refri, v_refri, spriteGroup)
         self.saudavel = Items_loja(25, 350, comida_saudavel, v_saudavel, spriteGroup)
-        self.whey = Items_loja(180, 350, comida_whey, v_whey, spriteGroup)
+        self.peru = Items_loja(180, 350, comida_peru, v_peru, spriteGroup)
+        self.whey = Items_loja(110, 470, comida_whey, v_whey, spriteGroup)
         self.title = Texto('LOJA', fonte, (255, 255, 255), fundo_transparente, 146, 10)
         self.botao_fechar = Botao_fechar_loja(315, 162, botao_fechar_loja, spriteGroup)
 
@@ -1228,6 +1239,7 @@ class Loja_fundo(pygame.sprite.Sprite):
         self.hamburguer.abrir()
         self.refri.abrir()
         self.saudavel.abrir()
+        self.peru.abrir()
         self.whey.abrir()
         self.botao_fechar.abrir()
 
@@ -1235,6 +1247,7 @@ class Loja_fundo(pygame.sprite.Sprite):
         self.hamburguer.fechar()
         self.refri.fechar()
         self.saudavel.fechar()
+        self.peru.fechar()
         self.whey.fechar()
         self.botao_fechar.fechar()
 
@@ -1286,6 +1299,60 @@ class Loja(pygame.sprite.Sprite):
     def update(self):
         self.texto.imprimir()
 
+
+#--------[TUTORIAL]----------#
+
+def Tutorial_hunger(pos_x, pos_y):
+    pygame.draw.rect(screen, (236, 124, 48), (pos_x, pos_y, 150, 25))
+    pygame.draw.rect(screen, (255, 255, 255), (pos_x, pos_y, 150, 25), 4)
+    screen.blit(hunger, (pos_x-20, pos_y))
+
+def Tutorial_energy(pos_x, pos_y):
+    pygame.draw.rect(screen, (255, 255, 0), (pos_x, pos_y, 150, 25))
+    pygame.draw.rect(screen, (255, 255, 255), (pos_x, pos_y, 150, 25), 4)
+    screen.blit(energy, (pos_x-20, pos_y-10))
+
+def Tutorial_money(player_teste, pos_x, pos_y):
+    imprimir(str(player_teste.current_money), dindin, (6, 152, 0), screen, pos_x, pos_y)
+    screen.blit(dolar, (pos_x-50, pos_y-5))
+
+def Tutorial_score(player_teste, pos_x, pos_y):
+    imprimir("SCORE: " + str(player_teste.score), fonte, (0, 0, 0), screen, pos_x, pos_y)
+
+class Tutorial_barra(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, spriteGroup):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((600, 50))
+        self.image.fill(GRAY)
+        self.rect = self.image.get_rect()
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+        self.spriteGroup = spriteGroup
+
+        self.divisao = (600 - comprimento) / 2
+        self.acerto = Acerto((pos_x + self.divisao), pos_y, spriteGroup)
+
+        self.ponteiro = Ponteiro(pos_x, pos_y, spriteGroup)
+
+    def fechar(self):
+        self.spriteGroup.remove(self)
+        self.acerto.fechar()
+        self.ponteiro.fechar()
+
+    def abrir(self):
+        self.spriteGroup.add(self)
+        self.acerto.abrir()
+        self.ponteiro.abrir()
+
+    def update(self):
+        self.score()
+
+    def score(self):
+        screen.blit(fundo_trans, (70, 290))
+        imprimir("Acertos", dindin, (6, 152, 0), screen, 95, 300)
+        imprimir(str(0), dindin, (6, 152, 0), screen, 160, 340)
+        imprimir("Erros", dindin, RED, screen, 325, 300)
+        imprimir(str(0), dindin, RED, screen, 370, 340)
 
 # -------------------------#
 
@@ -1375,19 +1442,41 @@ def mute(status):
 
 def como_jogar():
     como_jogar_sprites = pygame.sprite.Group()
-    barra_display = Barra(250, 150, como_jogar_sprites)
-    player_display = Player(-100, 20, 1, como_jogar_sprites)
-    me_display = Menina2(150, 20, 1, como_jogar_sprites)
-    men_display = Menina3(250, 20, 1, como_jogar_sprites)
-    meni_display = Menina4(350, 20, 1, como_jogar_sprites)
-    barra_display.abrir()
-    me_display.abrir()
-    # meni_display.abrir()
-    men_display.abrir()
+    player_teste = Player(0, 0, 1, como_jogar_sprites)
+    barra = Tutorial_barra(70, 500, como_jogar_sprites)
     running = True
     while running:
         screen.fill((0, 0, 0))
         screen.blit(background2, (0, 0))
+        texto_cama = pygame.Rect(180, 60, 0, 0)
+        texto_halter = pygame.Rect(180, 180, 300, 100)
+        texto_loja = pygame.Rect(620, 60, 300, 100)
+        texto_podio = pygame.Rect(620, 180, 300, 100)
+        texto_barra = pygame.Rect(70, 400, 400, 90)
+        texto_status = pygame.Rect(675, 300, 255, 250)
+
+        pygame.draw.rect(background2, (92, 168, 165), texto_cama, border_radius=15)
+        pygame.draw.rect(background2, (92, 168, 165), texto_halter, border_radius=15)
+        pygame.draw.rect(background2, (92, 168, 165), texto_loja, border_radius=15)
+        pygame.draw.rect(background2, (92, 168, 165), texto_podio, border_radius=15)
+        pygame.draw.rect(background2, (92, 168, 165), texto_barra, border_radius=15)
+        pygame.draw.rect(background2, (92, 168, 165), texto_status, border_radius=15)
+
+        screen.blit(pygame.transform.scale(fundo_tutorial, (900, 525)), (50, 50))
+
+        imprimir("Como Jogar", dindin, (0, 0, 0,), screen, 380, 10)
+        imprimir("DIA " + str(dia), txt_dia, (255, 255, 255), screen, 500, 460)
+
+        Tutorial_energy(500, 300)
+        Tutorial_hunger(500, 350)
+        Tutorial_money(player_teste, 550, 400)
+        Tutorial_score(player_teste, 500, 440)
+        screen.blit(cama, (70, 40))
+        screen.blit(halter, (70, 180))
+        screen.blit(loja, (500, 60))
+        screen.blit(podio, (500, 160))
+        barra.abrir()
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -1409,21 +1498,18 @@ def competir():
     competicao_sprite = pygame.sprite.Group()
     barra = Barra(200, 50, competicao_sprite)
     player = Player(-55, 20, peso, competicao_sprite)
-    m = random.randint(2, 4)
     if progressao == 0:
         trofeu = trofeu1
+        menina = Menina4(370, 20, peso, competicao_sprite)
     if progressao == 1:
         trofeu = trofeu2
+        menina = Menina3(370, 20, peso, competicao_sprite)
         sec = 1200
     if progressao == 2:
         trofeu = trofeu3
-        sec = 1000
-    if m == 2:
         menina = Menina2(370, 20, peso, competicao_sprite)
-    if m == 3:
-        menina = Menina3(370, 20, peso, competicao_sprite)
-    if m == 4:
-        menina = Menina4(370, 20, peso, competicao_sprite)
+        sec = 1000
+
     running = True
     barra.scores = False
     while running:
@@ -1443,6 +1529,12 @@ def competir():
             peso += 1
             progressao += 1
             dia += 1
+            if progressao == 0:
+                player.set_salario(200)
+            if progressao == 1:
+                player.set_salario(300)
+                sec = 1200
+            running = False
             jogo()
 
         if barra.rival == 10:
@@ -1492,7 +1584,7 @@ def jogo():
         screen.blit(background, (0, 0))
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        imprimir("DIA " + str(dia), fonte, (0, 0, 0), screen, 0, 0)
+        imprimir("DIA " + str(dia), txt_dia, (0, 0, 0), screen, 0, 0)
         b_cama = screen.blit(cama, (10, 10))
         b_loja = screen.blit(loja, (120, 10))
         b_treino = screen.blit(halter, (230, 10))
@@ -1500,11 +1592,12 @@ def jogo():
 
         if b_cama.collidepoint((mouse_x, mouse_y)):
             if click:
-                if dia != 5 and dia != 10 and dia != 15:
-                    player1.fechar()
-                    barra.fechar()
-                    player1.current_energy = 200
-                    dia += 1
+                #if dia != 5 and dia != 10 and dia != 15:
+                player1.fechar()
+                barra.fechar()
+                player1.current_energy = 200
+                dia += 1
+                player1.get_money()
 
         if not loja1.loja_fundo.open:
             if b_loja.collidepoint((mouse_x, mouse_y)) and click:
@@ -1517,6 +1610,7 @@ def jogo():
             b_comprar_hamburguer = loja1.loja_fundo.hamburguer.rect
             b_comprar_refri = loja1.loja_fundo.refri.rect
             b_comprar_saudavel = loja1.loja_fundo.saudavel.rect
+            b_comprar_peru = loja1.loja_fundo.peru.rect
             b_comprar_whey = loja1.loja_fundo.whey.rect
 
             if b_fechar_loja.collidepoint((mouse_x, mouse_y)) and click:
@@ -1525,35 +1619,49 @@ def jogo():
                 barra.fechar()
 
             if b_comprar_hamburguer.collidepoint((mouse_x, mouse_y)) and click:
-                player1.lost_money(v_hamburguer)
-                player1.get_food(70)
-                barra.acerto.engorda()
+                if v_hamburguer <= dinheiro:
+                    player1.lost_money(v_hamburguer)
+                    player1.get_food(70)
+                    player1.lost_score(1)
+                    barra.acerto.engorda()
 
             if b_comprar_refri.collidepoint((mouse_x, mouse_y)) and click:
-                player1.lost_money(v_refri)
-                player1.get_food(20)
-                player1.get_score(1)
-                barra.acerto.engorda()
+                if v_refri <= dinheiro:
+                    player1.lost_money(v_refri)
+                    player1.get_food(20)
+                    player1.lost_score(1)
+                    barra.acerto.engorda()
 
             if b_comprar_saudavel.collidepoint((mouse_x, mouse_y)) and click:
-                player1.lost_money(v_saudavel)
-                player1.get_food(50)
-                player1.get_score(1)
-                barra.acerto.emagrece()
+                if v_saudavel <= dinheiro:
+                    player1.lost_money(v_saudavel)
+                    player1.get_food(50)
+                    player1.get_score(1)
+                    barra.acerto.emagrece()
+
+            if b_comprar_peru.collidepoint((mouse_x, mouse_y)) and click:
+                if v_peru <= dinheiro:
+                    player1.lost_money(v_peru)
+                    player1.get_food(70)
+                    player1.get_score(1)
+                    barra.acerto.emagrece()
 
             if b_comprar_whey.collidepoint((mouse_x, mouse_y)) and click:
-                player1.lost_money(v_whey)
-                multiplicador += 1
+                if v_whey <= dinheiro:
+                    player1.lost_money(v_whey)
+                    multiplicador += 1
 
         if b_treino.collidepoint((mouse_x, mouse_y)):
             if click:
                 loja1.loja_fundo.fechar()
-                player1.abrir()
-                barra.abrir()
+                if player1.current_energy >= 25 and player1.current_hunger >= 50:
+                    player1.abrir()
+                    barra.abrir()
 
         if b_competicao.collidepoint((mouse_x, mouse_y)):
             if click:
                 if dia == 5 or dia == 10 or dia == 15:
+                    running = False
                     competir()
 
         click = False
