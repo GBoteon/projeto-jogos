@@ -131,6 +131,28 @@ class Texto(pygame.sprite.Sprite):
         return self.texto.get_rect()
 
 
+def hist1():
+    imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
+    imprimir("levantamento de pesos. Com a pandemia do novo ", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("coronavírus, Fernanda acabou saindo um pouco da", fonte, (0, 0, 0), screen, 80, 290)
+    imprimir("rotina, portanto precisa regular novamente seus  ", fonte, (0, 0, 0), screen, 80, 310)
+    imprimir("hábitosalimentares e de exercícios, para então  ", fonte, (0, 0, 0), screen, 80, 330)
+    imprimir("poder voltar às competições, ajude a Fernada ", fonte, (0, 0, 0), screen, 80, 350)
+    imprimir("nessa jornada!", fonte, (0, 0, 0), screen, 80, 370)
+    imprimir("Fernanda quer chegar ao topo, ajude ela em seus ", fonte, (0, 0, 0), screen, 80, 390)
+    imprimir("treinamentos e competições, mas fique atendo ela deve ", fonte, (0, 0, 0), screen, 80, 410)
+    imprimir("ganhar os três campeonatos e não pode perder o DIA.", fonte, (0, 0, 0), screen, 80, 430)
+    imprimir("Campeonato Regional Dia 5,", fonte, (0, 0, 0), screen, 80, 470)
+    imprimir("Campeonato Estadual Dia 10,", fonte, (0, 0, 0), screen, 80, 490)
+    imprimir("Campeonato Nacional dia 15.", fonte, (0, 0, 0), screen, 80, 510)
+
+def hist2():
+    imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
+    imprimir("levantamento de pesos. Com a pandemia do novo ", fonte, (0, 0, 0), screen, 80, 270)
+
+def hist3():
+    imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
+    imprimir("levantamento de pesos. Com a pandemia do novo ", fonte, (0, 0, 0), screen, 80, 270)
 # -------------------------#
 
 # ----------[CLASSES]------#
@@ -1365,14 +1387,14 @@ def gui():
     while True:
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-        screen.blit(title, (-470, 105))
+        screen.blit(title, (-470, 50))
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         b_mute = pygame.Rect(925, 15, 50, 50)
-        b_jogar = pygame.Rect(440, 250, 150, 50)
-        b_como_jogar = pygame.Rect(440, 325, 150, 50)
-        b_sair = pygame.Rect(440, 400, 150, 50)
+        b_jogar = pygame.Rect(340, 250, 150, 50)
+        b_como_jogar = pygame.Rect(340, 325, 150, 50)
+        b_sair = pygame.Rect(340, 400, 150, 50)
 
         if b_mute.collidepoint((mouse_x, mouse_y)):
             if click:
@@ -1398,9 +1420,9 @@ def gui():
         mutado.set_alpha(mutado_alpha)
         screen.blit(mutado, (725, -185))
 
-        t_jogar = Texto('Jogar', fonte, (255, 255, 255), screen, 485, 265)
-        t_como_jogar = Texto('Como Jogar', fonte, (255, 255, 255), screen, 455, 340)
-        t_sair = Texto('Sair', fonte, (255, 255, 255), screen, 493, 415)
+        t_jogar = Texto('Jogar', fonte, (255, 255, 255), screen, 385, 265)
+        t_como_jogar = Texto('Como Jogar', fonte, (255, 255, 255), screen, 355, 340)
+        t_sair = Texto('Sair', fonte, (255, 255, 255), screen, 393, 415)
 
         t_jogar.imprimir()
         t_como_jogar.imprimir()
@@ -1448,21 +1470,50 @@ def como_jogar():
     while running:
         screen.fill((0, 0, 0))
         screen.blit(background2, (0, 0))
-        texto_cama = pygame.Rect(180, 60, 0, 0)
+        screen.blit(pygame.transform.scale(fundo_tutorial, (900, 525)), (50, 50))
+
+        texto_cama = pygame.Rect(180, 60, 300, 100)
         texto_halter = pygame.Rect(180, 180, 300, 100)
         texto_loja = pygame.Rect(620, 60, 300, 100)
         texto_podio = pygame.Rect(620, 180, 300, 100)
         texto_barra = pygame.Rect(70, 400, 400, 90)
         texto_status = pygame.Rect(675, 300, 255, 250)
 
-        pygame.draw.rect(background2, (92, 168, 165), texto_cama, border_radius=15)
-        pygame.draw.rect(background2, (92, 168, 165), texto_halter, border_radius=15)
-        pygame.draw.rect(background2, (92, 168, 165), texto_loja, border_radius=15)
-        pygame.draw.rect(background2, (92, 168, 165), texto_podio, border_radius=15)
-        pygame.draw.rect(background2, (92, 168, 165), texto_barra, border_radius=15)
-        pygame.draw.rect(background2, (92, 168, 165), texto_status, border_radius=15)
-
-        screen.blit(pygame.transform.scale(fundo_tutorial, (900, 525)), (50, 50))
+        pygame.draw.rect(screen, (92, 168, 165), texto_cama, border_radius=15)
+        imprimir("Fernanda também se cansa,", fonte, (0, 0, 0), screen, 190, 75)
+        imprimir("use a cama para dar", fonte, (0, 0, 0), screen, 190, 95)
+        imprimir("a ela seu devido descanço", fonte, (0, 0, 0), screen, 190, 115)
+        pygame.draw.rect(screen, (92, 168, 165), texto_halter, border_radius=15)
+        imprimir("Para melhorar seu desem-", fonte, (0, 0, 0), screen, 190, 195)
+        imprimir("penho nos treinamentos ", fonte, (0, 0, 0), screen, 190, 215)
+        imprimir("é necessario treinar.", fonte, (0, 0, 0), screen, 190, 235)
+        pygame.draw.rect(screen, (92, 168, 165), texto_loja, border_radius=15)
+        imprimir("Para o reabastecimento da ", fonte, (0, 0, 0), screen, 630, 75)
+        imprimir("barra de fome será neces-", fonte, (0, 0, 0), screen, 630, 95)
+        imprimir("sario comprar alimentos", fonte, (0, 0, 0), screen, 630, 115)
+        imprimir("na loja.", fonte, (0, 0, 0), screen, 630, 135)
+        pygame.draw.rect(screen, (92, 168, 165), texto_podio, border_radius=15)
+        imprimir("Este é o caminho para ", fonte, (0, 0, 0), screen, 630, 195)
+        imprimir("as competições que ", fonte, (0, 0, 0), screen, 630, 215)
+        imprimir("ficará disponivel em", fonte, (0, 0, 0), screen, 630, 235)
+        imprimir("seus dias", fonte, (0, 0, 0), screen, 630, 255)
+        pygame.draw.rect(screen, (92, 168, 165), texto_barra, border_radius=15)
+        imprimir("Essa é a barra de treino. Acerte o pon-", fonte, (0, 0, 0), screen, 80, 410)
+        imprimir("teiro com a tecla “SPACE” na parte", fonte, (0, 0, 0), screen, 80, 430)
+        imprimir("verde para ganhar acertos, com 10", fonte, (0, 0, 0), screen, 80, 450)
+        imprimir("acertos o treino termina.", fonte, (0, 0, 0), screen, 80, 470)
+        pygame.draw.rect(screen, (92, 168, 165), texto_status, border_radius=15)
+        imprimir("Conforme você treina", fonte, (0, 0, 0), screen, 685, 315)
+        imprimir("Fernanda se cansa, ", fonte, (0, 0, 0), screen, 685, 335)
+        imprimir("não faça mais oque.", fonte, (0, 0, 0), screen, 685, 355)
+        imprimir("você pode", fonte, (0, 0, 0), screen, 685, 375)
+        imprimir("Fernanda também sente", fonte, (0, 0, 0), screen, 685, 395)
+        imprimir("fome, mas preste", fonte, (0, 0, 0), screen, 685, 415)
+        imprimir("atenção em sua dieta!", fonte, (0, 0, 0), screen, 685, 435)
+        imprimir("Fique atento com seu ", fonte, (0, 0, 0), screen, 685, 455)
+        imprimir("dinheiro, nem sempre", fonte, (0, 0, 0), screen, 685, 475)
+        imprimir("compensa pegar o", fonte, (0, 0, 0), screen, 685, 495)
+        imprimir("mais caro", fonte, (0, 0, 0), screen, 685, 515)
 
         imprimir("Como Jogar", dindin, (0, 0, 0,), screen, 380, 10)
         imprimir("DIA " + str(dia), txt_dia, (255, 255, 255), screen, 500, 460)
@@ -1571,6 +1622,7 @@ def competir():
 
 def jogo():
     global click, peso
+    hist = True
     jogo_sprites = pygame.sprite.Group()
     loja1 = Loja(0, 150, jogo_sprites)
     player1 = Player(424, 59, peso, jogo_sprites)
@@ -1579,7 +1631,7 @@ def jogo():
     # game loop
     running = True
     while running:
-        global progressao, energia, dia, comprimento, multiplicador, hit
+        global energia, dia, comprimento, multiplicador, hit, progressao
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -1590,17 +1642,34 @@ def jogo():
         b_treino = screen.blit(halter, (230, 10))
         b_competicao = screen.blit(podio, (340, 10))
 
+        if progressao == 1:
+            screen.blit(trofeu1, (540, 290))
+        if progressao == 2:
+            screen.blit(trofeu1, (540, 290))
+            screen.blit(trofeu2, (540, 168))
+        if hist:
+            screen.blit(pygame.transform.scale(fundo_tutorial, (600, 450)), (50, 150))
+            imprimir("HISTÓRIA", dindin, (0, 0, 0), screen, 250, 170)
+            if progressao == 0:
+                hist1()
+            if progressao == 1:
+                hist2()
+            if progressao == 1:
+                hist3()
+
         if b_cama.collidepoint((mouse_x, mouse_y)):
             if click:
-                #if dia != 5 and dia != 10 and dia != 15:
-                player1.fechar()
-                barra.fechar()
-                player1.current_energy = 200
-                dia += 1
-                player1.get_money()
+                hist = False
+                if dia != 5 and dia != 10 and dia != 15:
+                    player1.fechar()
+                    barra.fechar()
+                    player1.current_energy = 200
+                    dia += 1
+                    player1.get_money()
 
         if not loja1.loja_fundo.open:
             if b_loja.collidepoint((mouse_x, mouse_y)) and click:
+                hist = False
                 loja1.loja_fundo.abrir()
                 player1.fechar()
                 barra.fechar()
@@ -1653,6 +1722,7 @@ def jogo():
 
         if b_treino.collidepoint((mouse_x, mouse_y)):
             if click:
+                hist = False
                 loja1.loja_fundo.fechar()
                 if player1.current_energy >= 25 and player1.current_hunger >= 50:
                     player1.abrir()
@@ -1660,6 +1730,7 @@ def jogo():
 
         if b_competicao.collidepoint((mouse_x, mouse_y)):
             if click:
+                hist = False
                 if dia == 5 or dia == 10 or dia == 15:
                     running = False
                     competir()
