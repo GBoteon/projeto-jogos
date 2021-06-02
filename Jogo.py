@@ -1583,7 +1583,7 @@ def competir():
         barra.abrir()
         player.basic_score()
 
-        if barra.acertos == 1:
+        if barra.acertos == 10:
             peso += 1
             progressao += 1
             dia += 1
