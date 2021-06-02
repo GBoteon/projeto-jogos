@@ -1566,7 +1566,7 @@ def competir():
         trofeu = trofeu3
         menina = Menina2(370, 20, peso, competicao_sprite)
         sec -= 200
-
+    somWin = pygame.mixer.Sound('mixkit-video-game-win-2016.wav')
     running = True
     barra.scores = False
     while running:
@@ -1591,6 +1591,7 @@ def competir():
             if progressao == 2:
                 player.set_salario(150)
             running = False
+            somWin.play()
             jogo()
 
         if barra.rival == 10:
@@ -1743,6 +1744,13 @@ def jogo():
     player1 = Player(424, 59, peso, jogo_sprites)
     barra = Barra(25, 500, jogo_sprites)
     player1.call_idle()
+    somComer = pygame.mixer.Sound('mixkit-chewing-something-crunchy-2244.wav')
+    somBeber = pygame.mixer.Sound('mixkit-swallowing-a-water-drink-in-the-throat-150.wav')
+    somMetal = pygame.mixer.Sound('mixkit-pull-and-drop-gym-machine-2115.wav')
+    somMetal2 = pygame.mixer.Sound('mixkit-metal-gym-plate-2116.wav')
+    somPapel = pygame.mixer.Sound('mixkit-pile-of-paper-trash-2381.wav')
+    somCama = pygame.mixer.Sound('mixkit-male-sleep-breathe-2236.wav')
+    somPodi = pygame.mixer.Sound('mixkit-audience-light-applause-354.wav')
     # game loop
     running = True
     while running:
@@ -1784,6 +1792,7 @@ def jogo():
                     player1.current_energy = 200
                     dia += 1
                     player1.get_money()
+                    somCama.play()
 
         if not loja1.loja_fundo.open:
             if b_loja.collidepoint((mouse_x, mouse_y)) and click:
@@ -1791,6 +1800,7 @@ def jogo():
                 loja1.loja_fundo.abrir()
                 player1.fechar()
                 barra.fechar()
+                somPapel.play()
 
         if loja1.loja_fundo.open:
             b_fechar_loja = loja1.loja_fundo.botao_fechar.rect
@@ -1812,6 +1822,7 @@ def jogo():
                     player1.lost_score(1)
                     barra.acerto.engorda()
                     barra.acerto.engorda()
+                    somComer.play()
 
             if b_comprar_refri.collidepoint((mouse_x, mouse_y)) and click:
                 if v_refri <= dinheiro:
@@ -1819,6 +1830,7 @@ def jogo():
                     player1.get_food(20)
                     player1.lost_score(1)
                     barra.acerto.engorda()
+                    somBeber.play()
 
             if b_comprar_saudavel.collidepoint((mouse_x, mouse_y)) and click:
                 if v_saudavel <= dinheiro:
@@ -1826,6 +1838,7 @@ def jogo():
                     player1.get_food(20)
                     player1.get_score(1)
                     barra.acerto.emagrece()
+                    somComer.play()
 
             if b_comprar_peru.collidepoint((mouse_x, mouse_y)) and click:
                 if v_peru <= dinheiro:
@@ -1834,6 +1847,7 @@ def jogo():
                     player1.get_score(1)
                     barra.acerto.emagrece()
                     barra.acerto.emagrece()
+                    somComer.play()
 
             if b_comprar_whey.collidepoint((mouse_x, mouse_y)) and click:
                 if v_whey <= dinheiro:
@@ -1847,12 +1861,14 @@ def jogo():
                 if player1.current_energy >= 25 and player1.current_hunger >= 50:
                     player1.abrir()
                     barra.abrir()
+                    somMetal2.play()
 
         if b_competicao.collidepoint((mouse_x, mouse_y)):
             if click:
                 hist = False
                 if dia == 5 or dia == 10 or dia == 15:
                     running = False
+                    somPodi.play()
                     competir()
 
         click = False
@@ -1883,6 +1899,7 @@ def jogo():
             barra.ponteiro.treinar()
             player1.get_tired(40)
             player1.get_train(50)
+            somMetal.play()
             barra.hittable = False
 
         if barra.erros == 10:
@@ -1893,6 +1910,7 @@ def jogo():
             barra.ponteiro.perder()
             player1.get_tired(40)
             player1.get_train(50)
+            somMetal.play()
             barra.hittable = False
 
         jogo_sprites.update()
