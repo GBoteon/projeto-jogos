@@ -20,11 +20,9 @@ salario = 50
 hit = False
 multiplicador = 1
 score = 0
-sec = 1500
+sec = 900
 trofeu = 0
 peso = 1
-engordou = False
-emagreceu = False
 comprimento = 100
 velocidade = 5
 dia = 0
@@ -32,10 +30,10 @@ progressao = 0
 dinheiro = 0
 fome = 150
 energia = 150
-v_hamburguer = 20.0
+v_hamburguer = 25.0
 v_refri = 5.0
 v_saudavel = 15.0
-v_peru = 25.0
+v_peru = 30.0
 v_whey = 100.0
 # -----------------------------#
 
@@ -107,6 +105,7 @@ fonte = pygame.font.SysFont(None, 30)
 fonte_loja = pygame.font.SysFont(None, 15, bold=False)
 dindin = pygame.font.SysFont(None, 60)
 txt_dia = pygame.font.SysFont(None, 50)
+txt_win = pygame.font.SysFont(None, 45)
 
 
 def imprimir(texto, fonte, cor, surface, x, y):
@@ -148,11 +147,11 @@ def hist1():
 
 def hist2():
     imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
-    imprimir("levantamento de pesos. Com a pandemia do novo ", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("Campeonato Estadual Dia 10", fonte, (0, 0, 0), screen, 80, 270)
 
 def hist3():
     imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
-    imprimir("levantamento de pesos. Com a pandemia do novo ", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("Campeonato Nacional dia 15", fonte, (0, 0, 0), screen, 80, 270)
 # -------------------------#
 
 # ----------[CLASSES]------#
@@ -211,8 +210,6 @@ class Acerto(pygame.sprite.Sprite):
             comprimento += 10
             self.image = pygame.Surface((comprimento, 50))
             self.image.fill(GREEN)
-        else:
-            print("limite")
 
     def engorda(self):
         global comprimento
@@ -221,8 +218,6 @@ class Acerto(pygame.sprite.Sprite):
             comprimento -= 10
             self.image = pygame.Surface((comprimento, 50))
             self.image.fill(GREEN)
-        else:
-            print("limite")
 
     def fechar(self):
         self.spriteGroup.remove(self)
@@ -301,12 +296,8 @@ class Barra(pygame.sprite.Sprite):
         imprimir(str(self.rival), dindin, (6, 152, 0), screen, 885, 230)
 
     def dado(self):
-        self.rival += 1
-
-
-
-
-# adicionar 159 no x & 174 #
+        if random.randint(1, 10) > 3:
+            self.rival += 1
 
 
 class Peso1(pygame.sprite.Sprite):
@@ -1388,6 +1379,8 @@ def gui():
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         screen.blit(title, (-470, 50))
+        screen.blit(pygame.transform.scale(fundo_tutorial, (200, 180)), (660, 210))
+        imprimir("TOP 5", dindin, (0, 0, 0), screen, 675, 220)
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
@@ -1395,6 +1388,19 @@ def gui():
         b_jogar = pygame.Rect(340, 250, 150, 50)
         b_como_jogar = pygame.Rect(340, 325, 150, 50)
         b_sair = pygame.Rect(340, 400, 150, 50)
+
+        # Sprites Ranking
+        recordes = trofeu3
+        posy = 0
+        # Ranking Loop
+        scores = open("leaderboard.txt")
+        conteudo = scores.readlines()
+        screen.blit(recordes, (780, 190))
+        for i in conteudo:
+            i = i.strip("\n")
+            x = fonte.render(i, 1, (0, 0, 0))
+            screen.blit(x, (670, (posy+280)))
+            posy += 22
 
         if b_mute.collidepoint((mouse_x, mouse_y)):
             if click:
@@ -1516,7 +1522,7 @@ def como_jogar():
         imprimir("mais caro", fonte, (0, 0, 0), screen, 685, 515)
 
         imprimir("Como Jogar", dindin, (0, 0, 0,), screen, 380, 10)
-        imprimir("DIA " + str(dia), txt_dia, (255, 255, 255), screen, 500, 460)
+        imprimir("DIA " + str(dia), txt_dia, (0, 0, 0), screen, 500, 460)
 
         Tutorial_energy(500, 300)
         Tutorial_hunger(500, 350)
@@ -1555,11 +1561,11 @@ def competir():
     if progressao == 1:
         trofeu = trofeu2
         menina = Menina3(370, 20, peso, competicao_sprite)
-        sec = 1200
+        sec -= 200
     if progressao == 2:
         trofeu = trofeu3
         menina = Menina2(370, 20, peso, competicao_sprite)
-        sec = 1000
+        sec -= 200
 
     running = True
     barra.scores = False
@@ -1580,11 +1586,10 @@ def competir():
             peso += 1
             progressao += 1
             dia += 1
-            if progressao == 0:
-                player.set_salario(200)
             if progressao == 1:
-                player.set_salario(300)
-                sec = 1200
+                player.set_salario(100)
+            if progressao == 2:
+                player.set_salario(150)
             running = False
             jogo()
 
@@ -1620,6 +1625,116 @@ def competir():
         clock.tick(60)
 
 
+def vitoria():
+    global energia, dia, comprimento, multiplicador, hit, progressao, salario, velocidade, peso, sec, trofeu, dinheiro, fome, score
+    # Loop
+    nome = ""
+    pts = dindin.render(str(score), 1, (0, 0, 0))
+    while True:
+        letras = dindin.render(str(nome), 1, (0, 0, 0))
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        screen.blit(pygame.transform.scale(fundo_tutorial, (450, 400)), (50, 50))
+        imprimir("PARABÉNS VOCÊ VENCEU!!", txt_win, (0, 0, 0), screen, 60, 60)
+        imprimir("Sua pontuação foi:", txt_win, (0, 0, 0), screen, 80, 110)
+        screen.blit(pts, (180, 170))
+        imprimir("Digite seu nome:", txt_win, (0, 0, 0), screen, 80, 240)
+        screen.blit(letras, (100, 280))
+        imprimir("Prescione Enter", txt_win, (0, 0, 0), screen, 240, 390)
+        screen.blit(trofeu1, (540, 290))
+        screen.blit(trofeu2, (540, 168))
+        screen.blit(trofeu3, (540, 78))
+        screen.blit(idle, ((424 + 211), (59 + 166)))
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a and len(nome) < 11:
+                    nome += "a"
+                if event.key == pygame.K_b and len(nome) < 11:
+                    nome += "b"
+                if event.key == pygame.K_c and len(nome) < 11:
+                    nome += "c"
+                if event.key == pygame.K_d and len(nome) < 11:
+                    nome += "d"
+                if event.key == pygame.K_e and len(nome) < 11:
+                    nome += "e"
+                if event.key == pygame.K_f and len(nome) < 11:
+                    nome += "f"
+                if event.key == pygame.K_g and len(nome) < 11:
+                    nome += "g"
+                if event.key == pygame.K_h and len(nome) < 11:
+                    nome += "h"
+                if event.key == pygame.K_i and len(nome) < 11:
+                    nome += "i"
+                if event.key == pygame.K_j and len(nome) < 11:
+                    nome += "j"
+                if event.key == pygame.K_k and len(nome) < 11:
+                    nome += "k"
+                if event.key == pygame.K_l and len(nome) < 11:
+                    nome += "l"
+                if event.key == pygame.K_m and len(nome) < 11:
+                    nome += "m"
+                if event.key == pygame.K_n and len(nome) < 11:
+                    nome += "n"
+                if event.key == pygame.K_o and len(nome) < 11:
+                    nome += "o"
+                if event.key == pygame.K_p and len(nome) < 11:
+                    nome += "p"
+                if event.key == pygame.K_q and len(nome) < 11:
+                    nome += "q"
+                if event.key == pygame.K_r and len(nome) < 11:
+                    nome += "r"
+                if event.key == pygame.K_s and len(nome) < 11:
+                    nome += "s"
+                if event.key == pygame.K_t and len(nome) < 11:
+                    nome += "t"
+                if event.key == pygame.K_u and len(nome) < 11:
+                    nome += "u"
+                if event.key == pygame.K_v and len(nome) < 11:
+                    nome += "v"
+                if event.key == pygame.K_w and len(nome) < 11:
+                    nome += "w"
+                if event.key == pygame.K_x and len(nome) < 11:
+                    nome += "x"
+                if event.key == pygame.K_y and len(nome) < 11:
+                    nome += "y"
+                if event.key == pygame.K_z and len(nome) < 11:
+                    nome += "z"
+                if event.key == pygame.K_BACKSPACE:
+                    nome = ""
+                if event.key == pygame.K_RETURN:
+                    if nome == "":
+                        nome = "semnome"
+                    ranking = open("leaderboard.txt", "r+")
+                    conteudo = ranking.readlines()
+                    for i in range(len(conteudo)):
+                        recorde = conteudo[i].split(" ")
+                        if score > int(recorde[1]):
+                            conteudo.insert(i, nome + " " + str(score) + "\n")
+                            break
+                    ranking.truncate(0)
+                    ranking.seek(0)
+                    for i in range(5):
+                        ranking.write(conteudo[i])
+                    ranking.close()
+                    salario = 50
+                    multiplicador = 1
+                    score = 0
+                    sec = 1500
+                    trofeu = 0
+                    peso = 1
+                    comprimento = 100
+                    velocidade = 5
+                    dia = 0
+                    progressao = 0
+                    dinheiro = 0
+                    fome = 150
+                    energia = 150
+                    gui()
+
+
 def jogo():
     global click, peso
     hist = True
@@ -1647,6 +1762,9 @@ def jogo():
         if progressao == 2:
             screen.blit(trofeu1, (540, 290))
             screen.blit(trofeu2, (540, 168))
+        if progressao == 3:
+            vitoria()
+
         if hist:
             screen.blit(pygame.transform.scale(fundo_tutorial, (600, 450)), (50, 150))
             imprimir("HISTÓRIA", dindin, (0, 0, 0), screen, 250, 170)
@@ -1654,7 +1772,7 @@ def jogo():
                 hist1()
             if progressao == 1:
                 hist2()
-            if progressao == 1:
+            if progressao == 2:
                 hist3()
 
         if b_cama.collidepoint((mouse_x, mouse_y)):
@@ -1693,6 +1811,7 @@ def jogo():
                     player1.get_food(70)
                     player1.lost_score(1)
                     barra.acerto.engorda()
+                    barra.acerto.engorda()
 
             if b_comprar_refri.collidepoint((mouse_x, mouse_y)) and click:
                 if v_refri <= dinheiro:
@@ -1704,7 +1823,7 @@ def jogo():
             if b_comprar_saudavel.collidepoint((mouse_x, mouse_y)) and click:
                 if v_saudavel <= dinheiro:
                     player1.lost_money(v_saudavel)
-                    player1.get_food(50)
+                    player1.get_food(20)
                     player1.get_score(1)
                     barra.acerto.emagrece()
 
@@ -1713,6 +1832,7 @@ def jogo():
                     player1.lost_money(v_peru)
                     player1.get_food(70)
                     player1.get_score(1)
+                    barra.acerto.emagrece()
                     barra.acerto.emagrece()
 
             if b_comprar_whey.collidepoint((mouse_x, mouse_y)) and click:
@@ -1740,13 +1860,6 @@ def jogo():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click = True
-            if event.type == KEYDOWN:
                 if event.key == K_SPACE:
                     if barra.open:
                         barra.acertar()
@@ -1755,6 +1868,12 @@ def jogo():
                             hit = True
                         if not barra.hittable:
                             player1.lost_score(10)
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
 
         if barra.acertos == 10:
             barra.fechar()
@@ -1762,7 +1881,7 @@ def jogo():
             barra.acertos = 0
             barra.erros = 0
             barra.ponteiro.treinar()
-            player1.get_tired(25)
+            player1.get_tired(40)
             player1.get_train(50)
             barra.hittable = False
 
@@ -1772,7 +1891,7 @@ def jogo():
             barra.acertos = 0
             barra.erros = 0
             barra.ponteiro.perder()
-            player1.get_tired(25)
+            player1.get_tired(40)
             player1.get_train(50)
             barra.hittable = False
 
