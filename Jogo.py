@@ -95,7 +95,7 @@ mutado_alpha = 0
 
 # ---------[SONS]---------#
 pygame.mixer.init()
-pygame.mixer.music.load('menu.mp3')
+pygame.mixer.music.load('som/menu.mp3')
 pygame.mixer.music.play(-1)
 som_on = True
 # ------------------------#
@@ -1374,6 +1374,7 @@ click = False
 
 
 def gui():
+    global click
     # --------GAME LOOP-------#
     while True:
         screen.fill((0, 0, 0))
@@ -1566,7 +1567,7 @@ def competir():
         trofeu = trofeu3
         menina = Menina2(370, 20, peso, competicao_sprite)
         sec -= 200
-    somWin = pygame.mixer.Sound('mixkit-video-game-win-2016.wav')
+    somWin = pygame.mixer.Sound('som/mixkit-video-game-win-2016.wav')
     running = True
     barra.scores = False
     while running:
@@ -1582,7 +1583,7 @@ def competir():
         barra.abrir()
         player.basic_score()
 
-        if barra.acertos == 10:
+        if barra.acertos == 1:
             peso += 1
             progressao += 1
             dia += 1
@@ -1619,7 +1620,6 @@ def competir():
             if event.type == SECOND:
                 barra.dado()
 
-        click = False
         competicao_sprite.draw(screen)
         competicao_sprite.update()
         pygame.display.update()
@@ -1744,13 +1744,13 @@ def jogo():
     player1 = Player(424, 59, peso, jogo_sprites)
     barra = Barra(25, 500, jogo_sprites)
     player1.call_idle()
-    somComer = pygame.mixer.Sound('mixkit-chewing-something-crunchy-2244.wav')
-    somBeber = pygame.mixer.Sound('mixkit-swallowing-a-water-drink-in-the-throat-150.wav')
-    somMetal = pygame.mixer.Sound('mixkit-pull-and-drop-gym-machine-2115.wav')
-    somMetal2 = pygame.mixer.Sound('mixkit-metal-gym-plate-2116.wav')
-    somPapel = pygame.mixer.Sound('mixkit-pile-of-paper-trash-2381.wav')
-    somCama = pygame.mixer.Sound('mixkit-male-sleep-breathe-2236.wav')
-    somPodi = pygame.mixer.Sound('mixkit-audience-light-applause-354.wav')
+    somComer = pygame.mixer.Sound('som/mixkit-chewing-something-crunchy-2244.wav')
+    somBeber = pygame.mixer.Sound('som/mixkit-swallowing-a-water-drink-in-the-throat-150.wav')
+    somMetal = pygame.mixer.Sound('som/mixkit-pull-and-drop-gym-machine-2115.wav')
+    somMetal2 = pygame.mixer.Sound('som/mixkit-metal-gym-plate-2116.wav')
+    somPapel = pygame.mixer.Sound('som/mixkit-pile-of-paper-trash-2381.wav')
+    somCama = pygame.mixer.Sound('som/mixkit-male-sleep-breathe-2236.wav')
+    somPodi = pygame.mixer.Sound('som/mixkit-audience-light-applause-354.wav')
     # game loop
     running = True
     while running:
