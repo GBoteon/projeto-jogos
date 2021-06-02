@@ -38,13 +38,13 @@ v_whey = 100.0
 # -----------------------------#
 
 # ---------[IMAGENS]---------#
-background_image_filename = 'background.jpg'
-background_image_filename2 = 'background2.png'
-fundo_transparente_image = 'bg.png'
+background_image_filename = 'icones/background.jpg'
+background_image_filename2 = 'icones/background2.png'
+fundo_transparente_image = 'icones/bg.png'
 idle_image_filename = 'personagens/idle.png'
-title_image_filename = 'title.svg'
-volume_image_filename = 'volume.svg'
-mutado_image_filename = 'mute.svg'
+title_image_filename = 'icones/title.svg'
+volume_image_filename = 'icones/volume.svg'
+mutado_image_filename = 'icones/mute.svg'
 hunger_image_filename = 'icones/fome.png'
 energy_image_filename = 'icones/forca.png'
 dolar_image_filename = 'icones/dolar.png'
@@ -140,12 +140,11 @@ def hist1():
     imprimir("nessa jornada!", fonte, (0, 0, 0), screen, 80, 370)
     imprimir("Fernanda quer chegar ao topo, ajude ela em seus", fonte, (0, 0, 0), screen, 80, 390)
     imprimir("treinamentos e competições, mas fique atendo ela deve", fonte, (0, 0, 0), screen, 80, 410)
-
-    imprimir("Sua primeira adversária será a Nicole. Nascida em", fonte, (0, 0, 0), screen, 80, 440)
-    imprimir("Belo Horizonte, possui algumas vitórias municipais", fonte, (0, 0, 0), screen, 80, 460)
-    imprimir("na sua carreira apenas, uma adversária meticulosa", fonte, (0, 0, 0), screen, 80, 480)
-    imprimir("e tranquila.", fonte, (0, 0, 0), screen, 80, 500)
-
+    imprimir("ganhar os três campeonatos e não pode perder o DIA.", fonte, (0, 0, 0), screen, 80, 430)
+    imprimir("Sua primeira adversária será a Nicole. Nascida em", fonte, (0, 0, 0), screen, 80, 450)
+    imprimir("Belo Horizonte, possui algumas vitórias municipais", fonte, (0, 0, 0), screen, 80, 470)
+    imprimir("na sua carreira apenas, uma adversária meticulosa", fonte, (0, 0, 0), screen, 80, 490)
+    imprimir("e tranquila.", fonte, (0, 0, 0), screen, 80, 510)
     imprimir("Campeonato Regional Dia 5!", fonte, (0, 0, 0), screen, 80, 530)
 
 def hist2():
