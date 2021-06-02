@@ -134,24 +134,41 @@ def hist1():
     imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
     imprimir("levantamento de pesos. Com a pandemia do novo ", fonte, (0, 0, 0), screen, 80, 270)
     imprimir("coronavírus, Fernanda acabou saindo um pouco da", fonte, (0, 0, 0), screen, 80, 290)
-    imprimir("rotina, portanto precisa regular novamente seus  ", fonte, (0, 0, 0), screen, 80, 310)
-    imprimir("hábitosalimentares e de exercícios, para então  ", fonte, (0, 0, 0), screen, 80, 330)
-    imprimir("poder voltar às competições, ajude a Fernada ", fonte, (0, 0, 0), screen, 80, 350)
+    imprimir("rotina, portanto precisa regular novamente seus", fonte, (0, 0, 0), screen, 80, 310)
+    imprimir("hábitosalimentares e de exercícios, para então", fonte, (0, 0, 0), screen, 80, 330)
+    imprimir("poder voltar às competições, ajude a Fernanda", fonte, (0, 0, 0), screen, 80, 350)
     imprimir("nessa jornada!", fonte, (0, 0, 0), screen, 80, 370)
-    imprimir("Fernanda quer chegar ao topo, ajude ela em seus ", fonte, (0, 0, 0), screen, 80, 390)
-    imprimir("treinamentos e competições, mas fique atendo ela deve ", fonte, (0, 0, 0), screen, 80, 410)
-    imprimir("ganhar os três campeonatos e não pode perder o DIA.", fonte, (0, 0, 0), screen, 80, 430)
-    imprimir("Campeonato Regional Dia 5,", fonte, (0, 0, 0), screen, 80, 470)
-    imprimir("Campeonato Estadual Dia 10,", fonte, (0, 0, 0), screen, 80, 490)
-    imprimir("Campeonato Nacional dia 15.", fonte, (0, 0, 0), screen, 80, 510)
+    imprimir("Fernanda quer chegar ao topo, ajude ela em seus", fonte, (0, 0, 0), screen, 80, 390)
+    imprimir("treinamentos e competições, mas fique atendo ela deve", fonte, (0, 0, 0), screen, 80, 410)
+
+    imprimir("Sua primeira adversária será a Nicole. Nascida em", fonte, (0, 0, 0), screen, 80, 440)
+    imprimir("Belo Horizonte, possui algumas vitórias municipais", fonte, (0, 0, 0), screen, 80, 460)
+    imprimir("na sua carreira apenas, uma adversária meticulosa", fonte, (0, 0, 0), screen, 80, 480)
+    imprimir("e tranquila.", fonte, (0, 0, 0), screen, 80, 500)
+
+    imprimir("Campeonato Regional Dia 5!", fonte, (0, 0, 0), screen, 80, 530)
 
 def hist2():
-    imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
-    imprimir("Campeonato Estadual Dia 10", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("Parabéns, você venceu o campeonato regional!", fonte, (0, 0, 0), screen, 80, 250),
+    imprimir("Mas não acaba por aqui, treine para conquistar", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("o campeonato estadual!", fonte, (0, 0, 0), screen, 80, 290)
+    imprimir("Sua próxima adversária será a Brian. Nascida em", fonte, (0, 0, 0), screen, 80, 330)
+    imprimir("Ouro Preto, possui grandes vitórias nos campeonatos", fonte, (0, 0, 0), screen, 80, 350)
+    imprimir("estaduais, sendo uma adversária muito autoconfiante e", fonte, (0, 0, 0), screen, 80, 370)
+    imprimir("bem equilibrada.", fonte, (0, 0, 0), screen, 80, 390)
+    imprimir("Campeonato Estadual Dia 10!", fonte, (0, 0, 0), screen, 80, 470)
 
 def hist3():
-    imprimir("Fernanda é uma competidora profissional de", fonte, (0, 0, 0), screen, 80, 250),
-    imprimir("Campeonato Nacional dia 15", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("Parabéns, você venceu o campeonato estadual!", fonte, (0, 0, 0), screen, 80, 250),
+    imprimir("Mas não acaba por aqui, treine para conquistar", fonte, (0, 0, 0), screen, 80, 270)
+    imprimir("o campeonato nacional!", fonte, (0, 0, 0), screen, 80, 290)
+    imprimir("Sua próxima adversária será a Brigite. Nascida em", fonte, (0, 0, 0), screen, 80, 330)
+    imprimir("São Paulo capital, possui uma carreira grandiosa,", fonte, (0, 0, 0), screen, 80, 350)
+    imprimir("sendo ganhadora consecutiva por 3 vezes do", fonte, (0, 0, 0), screen, 80, 370)
+    imprimir("campeonato nacional, uma adversária à altura,", fonte, (0, 0, 0), screen, 80, 390)
+    imprimir("muito segura, determinada, que não mede esforços", fonte, (0, 0, 0), screen, 80, 410)
+    imprimir("para alcançar seus objetivos.", fonte, (0, 0, 0), screen, 80, 430)
+    imprimir("Campeonato Nacional Dia 15!", fonte, (0, 0, 0), screen, 80, 470)
 # -------------------------#
 
 # ----------[CLASSES]------#
